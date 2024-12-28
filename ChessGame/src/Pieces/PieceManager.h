@@ -1,6 +1,12 @@
-#include "IPiece.h"
-#include "IPieceManager.h"
+#include "PieceFactory.h"
+#include "interfaces/IPiece.h"
+#include "interfaces/IPieceManager.h"
+#include <vector>
 
 class PieceManager : public IPieceManager {
-  PieceManager();
+public:
+  PieceManager(PieceFactory &piece_factory);
+
+private:
+  std::vector<std::unique_ptr<Pawn>> m_pawns;
 };

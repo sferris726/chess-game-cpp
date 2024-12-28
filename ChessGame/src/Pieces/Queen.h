@@ -1,4 +1,4 @@
-#include "IPiece.h"
+#include "interfaces/IPiece.h"
 
 #pragma once
 
@@ -11,8 +11,14 @@ public:
 
   char getSymbol() const override;
 
+  void setPosition(int x, int y) override;
+
+  std::pair<int, int> getPosition() const override;
+
   PieceColor getColor() const override;
 
 private:
   PieceColor m_color;
+  int m_pos_x;
+  int m_pos_y;
 };
