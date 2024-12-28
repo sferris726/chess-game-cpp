@@ -9,6 +9,4 @@ bool King::isMoveValid(int start_x, int start_y, int end_x, int end_y,
 
 char King::getSymbol() const { return 'K'; }
 
-IPiece::PieceColor King::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor King::getColor() const { return m_color; }

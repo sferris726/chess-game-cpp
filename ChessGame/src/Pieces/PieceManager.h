@@ -1,5 +1,6 @@
 #include "IPiece.h"
+#include "IPieceManager.h"
 
-class PieceManager {
-    PieceManager();
+class PieceManager : public IPieceManager {
+  PieceManager();
 };

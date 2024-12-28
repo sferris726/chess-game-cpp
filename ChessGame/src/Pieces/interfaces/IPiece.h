@@ -4,10 +4,7 @@
 
 class IPiece {
 public:
-  enum class PieceColor {
-    WHITE,
-    BLACK
-  };
+  enum class PieceColor { WHITE, BLACK };
 
   virtual bool isMoveValid(int start_x, int start_y, int end_x, int end_y,
                            IBoard &board) = 0;

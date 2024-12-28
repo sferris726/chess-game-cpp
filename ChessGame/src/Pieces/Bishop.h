@@ -13,6 +13,6 @@ public:
 
   PieceColor getColor() const override;
 
-  private:
+private:
   PieceColor m_color;
 };

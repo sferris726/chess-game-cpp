@@ -9,6 +9,4 @@ bool Pawn::isMoveValid(int start_x, int start_y, int end_x, int end_y,
 
 char Pawn::getSymbol() const { return 'P'; }
 
-IPiece::PieceColor Pawn::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor Pawn::getColor() const { return m_color; }

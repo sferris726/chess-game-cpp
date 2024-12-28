@@ -1,6 +1,7 @@
 #include "Game.h"
 
-Game::Game(IBoard &board) : m_board{board} {}
+Game::Game(IBoard &board, IPieceManager &piece_manager)
+    : m_board{board}, m_piece_manager{piece_manager} {}
 
 void Game::start() {}
 

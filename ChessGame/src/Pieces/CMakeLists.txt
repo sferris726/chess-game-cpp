@@ -1,4 +1,5 @@
-file(GLOB_RECURSE PIECES_SOURCES ${ CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB_RECURSE PIECES_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
 # Create a library from all .cpp files found
 add_library(Pieces ${PIECES_SOURCES})
