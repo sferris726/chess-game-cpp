@@ -1,8 +1,10 @@
-#include <iostream>
 #include "Board.h"
 #include "Game.h"
+#include <iostream>
+#include <memory>
 
 int main() {
-    std::cout << "Hello, CMake and C++!" << std::endl;
-    return 0;
+  std::shared_ptr<Board> board = std::make_shared<Board>();
+  board->displayBoard();
+  return 0;
 }
