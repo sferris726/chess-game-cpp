@@ -2,9 +2,9 @@
 
 #pragma once
 
-class Pawn : public IPiece {
+class Rook : public IPiece {
 public:
-  Pawn(PieceColor piece_color);
+  Rook(PieceColor piece_color);
 
   bool isMoveValid(int start_x, int start_y, int end_x, int end_y,
                    IBoard &board) override;

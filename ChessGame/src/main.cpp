@@ -5,6 +5,6 @@
 
 int main() {
   std::shared_ptr<Board> board = std::make_shared<Board>();
-  board->displayBoard();
+  std::unique_ptr<Game> game = std::make_unique<Game>(*board);
   return 0;
 }
