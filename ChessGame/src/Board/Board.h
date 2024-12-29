@@ -1,11 +1,27 @@
 #include "IBoard.h"
+#include "PieceFactory.h"
+#include "interfaces/IPieceManager.h"
+#include <map>
 
 #pragma once
 
 class Board : public IBoard {
 public:
-  Board();
+  Board(PieceFactory &piece_factory);
 
   void displayBoard() override;
-  bool movePiece(int start_x, int start_y, int end_x, int end_y) override;
+  bool movePiece(const std::string &from_pos,
+                 const std::string &to_pos) override;
+
+private:
+  void generateBoard();
+  void generatePawnRow(std::map<std::string, std::unique_ptr<IPiece>> &in_map,
+                       IPiece::PieceColor color);
+  void
+  generateNonPawnRow(std::map<std::string, std::unique_ptr<IPiece>> &in_map,
+                     IPiece::PieceColor color);
+  std::string getColLetter(int col);
+
+  PieceFactory &m_piece_factory;
+  std::map<std::string, std::unique_ptr<IPiece>> m_board_map;
 };

@@ -1,20 +1,9 @@
 #include "King.h"
 
-King::King(PieceColor piece_color)
-    : m_color{piece_color}, m_pos_x{0}, m_pos_y{0} {}
+King::King(PieceColor color) : m_color{color} {}
 
-bool King::isMoveValid(int start_x, int start_y, int end_x, int end_y,
-                       IBoard &board) {
+bool King::isMoveValid(const std::string &from_pos, const std::string &to_pos) {
   return false;
-}
-
-void King::setPosition(int x, int y) {
-  m_pos_x = x;
-  m_pos_y = y;
-}
-
-std::pair<int, int> King::getPosition() const {
-  return std::pair(m_pos_x, m_pos_y);
 }
 
 char King::getSymbol() const { return 'K'; }

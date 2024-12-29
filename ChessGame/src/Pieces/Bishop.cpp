@@ -1,20 +1,10 @@
 #include "Bishop.h"
 
-Bishop::Bishop(PieceColor piece_color)
-    : m_color{piece_color}, m_pos_x{0}, m_pos_y{0} {}
+Bishop::Bishop(PieceColor color) : m_color{color} {}
 
-bool Bishop::isMoveValid(int start_x, int start_y, int end_x, int end_y,
-                         IBoard &board) {
+bool Bishop::isMoveValid(const std::string &from_pos,
+                         const std::string &to_pos) {
   return false;
-}
-
-void Bishop::setPosition(int x, int y) {
-  m_pos_x = x;
-  m_pos_y = y;
-}
-
-std::pair<int, int> Bishop::getPosition() const {
-  return std::pair(m_pos_x, m_pos_y);
 }
 
 char Bishop::getSymbol() const { return 'B'; }

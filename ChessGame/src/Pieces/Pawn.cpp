@@ -1,20 +1,9 @@
 #include "Pawn.h"
 
-Pawn::Pawn(PieceColor piece_color)
-    : m_color{piece_color}, m_pos_x{0}, m_pos_y{0} {}
+Pawn::Pawn(PieceColor color) : m_color{color} {}
 
-bool Pawn::isMoveValid(int start_x, int start_y, int end_x, int end_y,
-                       IBoard &board) {
+bool Pawn::isMoveValid(const std::string &from_pos, const std::string &to_pos) {
   return false;
-}
-
-void Pawn::setPosition(int x, int y) {
-  m_pos_x = x;
-  m_pos_y = y;
-}
-
-std::pair<int, int> Pawn::getPosition() const {
-  return std::pair(m_pos_x, m_pos_y);
 }
 
 char Pawn::getSymbol() const { return 'P'; }

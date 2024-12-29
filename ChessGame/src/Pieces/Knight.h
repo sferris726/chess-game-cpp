@@ -4,21 +4,15 @@
 
 class Knight : public IPiece {
 public:
-  Knight(PieceColor piece_color);
+  Knight(PieceColor color);
 
-  bool isMoveValid(int start_x, int start_y, int end_x, int end_y,
-                   IBoard &board) override;
+  bool isMoveValid(const std::string &from_pos,
+                   const std::string &to_pos) override;
 
   char getSymbol() const override;
-
-  void setPosition(int x, int y) override;
-
-  std::pair<int, int> getPosition() const override;
 
   PieceColor getColor() const override;
 
 private:
   PieceColor m_color;
-  int m_pos_x;
-  int m_pos_y;
 };

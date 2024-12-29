@@ -14,5 +14,6 @@ class PieceFactory {
 public:
   PieceFactory();
 
-  std::unique_ptr<IPiece> createPiece(IPiece::PieceType piece, IPiece::PieceColor color);
+  std::unique_ptr<IPiece> createPiece(IPiece::PieceType piece,
+                                      IPiece::PieceColor color);
 };

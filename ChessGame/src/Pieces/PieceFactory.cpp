@@ -2,7 +2,8 @@
 
 PieceFactory::PieceFactory() {}
 
-std::unique_ptr<IPiece> PieceFactory::createPiece(IPiece::PieceType piece, IPiece::PieceColor color) {
+std::unique_ptr<IPiece> PieceFactory::createPiece(IPiece::PieceType piece,
+                                                  IPiece::PieceColor color) {
   switch (piece) {
   case IPiece::PieceType::PAWN:
     return std::make_unique<Pawn>(color);

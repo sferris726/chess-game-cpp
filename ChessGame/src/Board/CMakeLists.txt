@@ -5,5 +5,9 @@ file(GLOB_RECURSE BOARD_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
 add_library(Board ${BOARD_SOURCES})
 
 # Specify the include directory for this library (Board)
-target_include_directories(Board PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
-                                        ${CMAKE_CURRENT_SOURCE_DIR}/interfaces)
+target_include_directories(
+  Board
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/interfaces
+         ${CMAKE_CURRENT_SOURCE_DIR}/../Pieces)
+
+target_link_libraries(Board PRIVATE Pieces)

@@ -8,5 +8,6 @@ public:
   PieceManager(PieceFactory &piece_factory);
 
 private:
+  enum class PieceColor { WHITE, BLACK };
   std::vector<std::unique_ptr<Pawn>> m_pawns;
 };

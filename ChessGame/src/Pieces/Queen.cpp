@@ -1,20 +1,10 @@
 #include "Queen.h"
 
-Queen::Queen(PieceColor piece_color)
-    : m_color{piece_color}, m_pos_x{0}, m_pos_y{0} {}
+Queen::Queen(PieceColor color) : m_color{color} {}
 
-bool Queen::isMoveValid(int start_x, int start_y, int end_x, int end_y,
-                        IBoard &board) {
+bool Queen::isMoveValid(const std::string &from_pos,
+                        const std::string &to_pos) {
   return false;
-}
-
-void Queen::setPosition(int x, int y) {
-  m_pos_x = x;
-  m_pos_y = y;
-}
-
-std::pair<int, int> Queen::getPosition() const {
-  return std::pair(m_pos_x, m_pos_y);
 }
 
 char Queen::getSymbol() const { return 'Q'; }
