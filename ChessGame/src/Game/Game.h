@@ -3,6 +3,7 @@
 #include "interfaces/IPiece.h"
 #include "interfaces/IPieceManager.h"
 #include <iostream>
+#include <regex>
 #include <sstream>
 
 #pragma once

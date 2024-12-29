@@ -2,9 +2,48 @@
 
 Bishop::Bishop(PieceColor color) : m_color{color} {}
 
-bool Bishop::isMoveValid(const std::string &from_pos, const std::string &to_pos,
-                         std::unique_ptr<IPiece> to_pos_piece) {
-  return false;
+bool Bishop::isMoveValid(
+    const std::string &from_pos, const std::string &to_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  const auto &board_positions =
+      PieceUtilities::convertBoardPosition(from_pos, to_pos);
+
+  if (board_positions[0].second == board_positions[1].second) {
+    return false; // Not moving diagonally
+  }
+
+  // Start at from position
+  int col = board_positions[0].first;
+  int row = board_positions[0].second;
+
+  if (board_positions[0].second < board_positions[0].second) {
+    while (col < board_positions[1].first && row < board_positions[1].second) {
+      ++col;
+      ++row;
+
+      std::string pos = std::to_string(col) + std::to_string(row);
+      if (board_map.at(pos)->getColor() == getColor()) {
+        return false;
+      }
+    }
+  } else {
+    while (col > board_positions[1].first && row > board_positions[1].second) {
+      --col;
+      --row;
+
+      std::string pos = std::to_string(col) + std::to_string(row);
+      if (board_map.at(pos)->getColor() == getColor()) {
+        return false;
+      }
+    }
+  }
+
+  // Make sure we are at the target position
+  if (col != board_positions[1].first && row != board_positions[1].second) {
+    return false;
+  }
+
+  return true;
 }
 
 char Bishop::getSymbol() const { return 'B'; }

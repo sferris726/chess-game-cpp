@@ -16,5 +16,7 @@ std::string convertPieceColorToStr(IPiece::PieceColor color_type);
 std::vector<std::pair<int, int>>
 convertBoardPosition(const std::string &from_pos, const std::string &to_pos);
 
+std::string getColLetter(int col);
+
 int getColNum(const char col);
 } // namespace PieceUtilities

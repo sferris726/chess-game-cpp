@@ -2,8 +2,9 @@
 
 King::King(PieceColor color) : m_color{color} {}
 
-bool King::isMoveValid(const std::string &from_pos, const std::string &to_pos,
-                       std::unique_ptr<IPiece> to_pos_piece) {
+bool King::isMoveValid(
+    const std::string &from_pos, const std::string &to_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   return false;
 }
 

@@ -1,5 +1,6 @@
 #include "IBoard.h"
 #include "PieceFactory.h"
+#include "PieceUtilities.h"
 #include "interfaces/IPieceManager.h"
 #include <map>
 
@@ -22,7 +23,6 @@ private:
   void
   generateNonPawnRow(std::map<std::string, std::unique_ptr<IPiece>> &in_map,
                      IPiece::PieceColor color);
-  std::string getColLetter(int col);
 
   PieceFactory &m_piece_factory;
   std::function<void()> m_game_over_callback;

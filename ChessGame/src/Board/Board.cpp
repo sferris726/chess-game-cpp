@@ -18,10 +18,11 @@ void Board::displayBoard() {
 
     for (int j = 0; j < 8; ++j) {
       if (i == 0) {
-        std::cout << "   " << getColLetter(j) << "  ";
+        std::cout << "   " << PieceUtilities::getColLetter(j) << "  ";
       } else {
         std::cout << "[ ";
-        const std::string board_pos = getColLetter(j) + std::to_string(i);
+        const std::string board_pos =
+            PieceUtilities::getColLetter(j) + std::to_string(i);
 
         if (m_board_map[board_pos]) {
           std::cout << m_board_map[board_pos]->getSymbol()
@@ -63,32 +64,10 @@ void Board::generateBoard() {
       generatePawnRow(m_board_map, color);
     } else {
       for (int j = 0; j < 8; ++j) {
-        m_board_map.emplace(getColLetter(j) + std::to_string(i), nullptr);
+        m_board_map.emplace(PieceUtilities::getColLetter(j) + std::to_string(i),
+                            nullptr);
       }
     }
-  }
-}
-
-std::string Board::getColLetter(int col) {
-  switch (col) {
-  case 0:
-    return "a";
-  case 1:
-    return "b";
-  case 2:
-    return "c";
-  case 3:
-    return "d";
-  case 4:
-    return "e";
-  case 5:
-    return "f";
-  case 6:
-    return "g";
-  case 7:
-    return "h";
-  default:
-    throw std::runtime_error("Invalid Col passed");
   }
 }
 
@@ -117,9 +96,10 @@ void Board::generatePawnRow(
     std::map<std::string, std::unique_ptr<IPiece>> &in_map,
     IPiece::PieceColor color) {
   for (int i = 0; i < PAWNS; ++i) {
+    const std::string col_letter = PieceUtilities::getColLetter(i);
     const std::string key = color == IPiece::PieceColor::WHITE
-                                ? getColLetter(i) + "2"
-                                : getColLetter(i) + "7";
+                                ? col_letter + "2"
+                                : col_letter + "7";
     in_map.emplace(key,
                    m_piece_factory.createPiece(IPiece::PieceType::PAWN, color));
   }

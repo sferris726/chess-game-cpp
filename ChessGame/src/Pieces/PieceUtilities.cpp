@@ -22,6 +22,29 @@ convertBoardPosition(const std::string &from_pos, const std::string &to_pos) {
   return ret;
 }
 
+std::string getColLetter(int col) {
+  switch (col) {
+  case 0:
+    return "a";
+  case 1:
+    return "b";
+  case 2:
+    return "c";
+  case 3:
+    return "d";
+  case 4:
+    return "e";
+  case 5:
+    return "f";
+  case 6:
+    return "g";
+  case 7:
+    return "h";
+  default:
+    throw std::runtime_error("Invalid Col passed");
+  }
+}
+
 int getColNum(const char col) {
   if (col == 'a') {
     return 0;

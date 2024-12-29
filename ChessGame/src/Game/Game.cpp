@@ -1,5 +1,7 @@
 #include "Game.h"
 
+static const std::regex PATTERN("^[a-h1-8]+$");
+
 Game::Game(IBoard &board, IPieceManager &piece_manager)
     : m_board{board}, m_piece_manager{piece_manager}, m_is_game_over{false},
       m_turn_count{0} {
@@ -31,6 +33,12 @@ void Game::start() {
     std::stringstream ss(input);
     if (ss >> from_pos >> to_pos) {
       if (ss.eof()) {
+        if (!std::regex_match(from_pos, PATTERN) ||
+            !std::regex_match(to_pos, PATTERN)) {
+          std::cout << "Invalid input, please try again" << std::endl;
+          continue;
+        }
+
         const bool success = m_board.movePiece(color_move, from_pos, to_pos);
         if (success) {
           m_turn_count++;

@@ -2,33 +2,57 @@
 
 Pawn::Pawn(PieceColor color) : m_color{color}, m_first_move_made{false} {}
 
-bool Pawn::isMoveValid(const std::string &from_pos, const std::string &to_pos,
-                       std::unique_ptr<IPiece> to_pos_piece) {
+bool Pawn::isMoveValid(
+    const std::string &from_pos, const std::string &to_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   const auto &board_positions =
       PieceUtilities::convertBoardPosition(from_pos, to_pos);
 
   if (board_positions.size() < 2) {
-    return false; // Conversion problem
+    return false;
   }
-
-  const int allowable_squares = m_first_move_made ? 1 : 2;
-  const bool to_pos_occupied = to_pos_piece != nullptr;
-  const bool diff_color = to_pos_piece->getColor() != getColor();
 
   // Check if move is vertical or diagonal
   if (board_positions[0].first == board_positions[1].first) {
     // Move is vertical
-    if (!diff_color ||
-        std::abs(board_positions[0].second - board_positions[1].second) >
-            allowable_squares) {
-      return false;
+    const std::string col(1, from_pos[0]);
+    int row = board_positions[0].second;
+
+    // Make sure nothing blocking move
+    if (m_color == IPiece::PieceColor::WHITE) {
+      while (row < board_positions[1].second) {
+        if (board_map.at(col + std::to_string(row)) != nullptr) {
+          return false;
+        }
+        ++row;
+      }
+    } else {
+      while (row > board_positions[1].second) {
+        if (board_map.at(col + std::to_string(row)) != nullptr) {
+          return false;
+        }
+        --row;
+      }
     }
   } else {
     // Move is diagonal
-    if (!to_pos_occupied) {
-      return false;
+    if (board_map.at(to_pos) == nullptr) {
+      return false; // Opponent doesn't exist, not valid
     }
 
+    // Make sure move is not backwards
+    if (m_color == IPiece::PieceColor::WHITE) {
+      if (board_positions[0].second > board_positions[1].second) {
+        return false;
+      }
+    } else {
+      if (board_positions[0].second < board_positions[1].second) {
+        return false;
+      }
+    }
+
+    // Make sure opponent is valid and move is only 1 square diagonally
+    const bool diff_color = board_map.at(to_pos)->getColor() != getColor();
     if (!diff_color ||
         std::abs(board_positions[0].first - board_positions[1].first > 1)) {
       return false;
