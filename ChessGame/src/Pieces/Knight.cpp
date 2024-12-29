@@ -2,8 +2,8 @@
 
 Knight::Knight(PieceColor color) : m_color{color} {}
 
-bool Knight::isMoveValid(const std::string &from_pos,
-                         const std::string &to_pos) {
+bool Knight::isMoveValid(const std::string &from_pos, const std::string &to_pos,
+                         std::unique_ptr<IPiece> to_pos_piece) {
   return false;
 }
 

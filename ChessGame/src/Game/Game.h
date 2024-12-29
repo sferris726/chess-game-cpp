@@ -1,6 +1,9 @@
 #include "IGame.h"
 #include "interfaces/IBoard.h"
+#include "interfaces/IPiece.h"
 #include "interfaces/IPieceManager.h"
+#include <iostream>
+#include <sstream>
 
 #pragma once
 
@@ -9,10 +12,10 @@ public:
   Game(IBoard &board, IPieceManager &piece_manager);
 
   void start() override;
-  void playMove(int start_x, int start_y, int end_x, int end_y) override;
-  bool isGameOver() override;
 
 private:
   IBoard &m_board;
   IPieceManager &m_piece_manager;
+  bool m_is_game_over;
+  int m_turn_count;
 };

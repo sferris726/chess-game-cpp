@@ -10,8 +10,10 @@ public:
   Board(PieceFactory &piece_factory);
 
   void displayBoard() override;
-  bool movePiece(const std::string &from_pos,
+  bool movePiece(const IPiece::PieceColor piece_color,
+                 const std::string &from_pos,
                  const std::string &to_pos) override;
+  void onGameOver(std::function<void()> callback) override;
 
 private:
   void generateBoard();
@@ -23,5 +25,6 @@ private:
   std::string getColLetter(int col);
 
   PieceFactory &m_piece_factory;
+  std::function<void()> m_game_over_callback;
   std::map<std::string, std::unique_ptr<IPiece>> m_board_map;
 };

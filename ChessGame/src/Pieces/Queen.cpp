@@ -2,8 +2,8 @@
 
 Queen::Queen(PieceColor color) : m_color{color} {}
 
-bool Queen::isMoveValid(const std::string &from_pos,
-                        const std::string &to_pos) {
+bool Queen::isMoveValid(const std::string &from_pos, const std::string &to_pos,
+                        std::unique_ptr<IPiece> to_pos_piece) {
   return false;
 }
 

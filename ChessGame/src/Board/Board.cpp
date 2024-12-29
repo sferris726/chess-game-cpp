@@ -3,7 +3,6 @@
 #include "iostream"
 
 static const int PAWNS = 8;
-static const int B_K_R = 2; // Bishops, Knights and Rooks are all 2 pieces
 
 Board::Board(PieceFactory &piece_factory) : m_piece_factory{piece_factory} {
   generateBoard();
@@ -33,14 +32,23 @@ void Board::displayBoard() {
       }
     }
 
-    std::cout << std::endl;
+    std::cout << "\n";
   }
+
+  std::cout << "\n";
 }
 
-bool Board::movePiece(const std::string &from_pos, const std::string &to_pos) {
-  // check if move is valid in manager
+bool Board::movePiece(const IPiece::PieceColor piece_color,
+                      const std::string &from_pos, const std::string &to_pos) {
   // check if board spot is occupied
+  // check the occupied piece is right color
+  // check if move is valid
+  // use std::move to move ownership of the ptr
   return false;
+}
+
+void Board::onGameOver(std::function<void()> callback) {
+  m_game_over_callback = callback;
 }
 
 void Board::generateBoard() {
@@ -108,7 +116,7 @@ void Board::generateNonPawnRow(
 void Board::generatePawnRow(
     std::map<std::string, std::unique_ptr<IPiece>> &in_map,
     IPiece::PieceColor color) {
-  for (int i = 0; i < 8; ++i) {
+  for (int i = 0; i < PAWNS; ++i) {
     const std::string key = color == IPiece::PieceColor::WHITE
                                 ? getColLetter(i) + "2"
                                 : getColLetter(i) + "7";
