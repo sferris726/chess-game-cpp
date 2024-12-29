@@ -5,13 +5,34 @@
 static const int PAWNS = 8;
 static const int B_K_R = 2; // Bishops, Knights and Rooks are all 2 pieces
 
-Board::Board(PieceFactory &piece_factory) : m_piece_factory{piece_factory} {}
+Board::Board(PieceFactory &piece_factory) : m_piece_factory{piece_factory} {
+  generateBoard();
+}
 
 void Board::displayBoard() {
-  for (int i = 0; i < 8; ++i) {
-    for (int j = 0; j < 8; ++j) {
-      std::cout << "[]";
+  for (int i = 8; i >= 0; --i) {
+    if (i > 0) {
+      std::cout << std::to_string(i) << " ";
+    } else {
+      std::cout << "  ";
     }
+
+    for (int j = 0; j < 8; ++j) {
+      if (i == 0) {
+        std::cout << "   " << getColLetter(j) << "  ";
+      } else {
+        std::cout << "[ ";
+        const std::string board_pos = getColLetter(j) + std::to_string(i);
+
+        if (m_board_map[board_pos]) {
+          std::cout << m_board_map[board_pos]->getSymbol()
+                    << m_board_map[board_pos]->getColor() << " ]";
+        } else {
+          std::cout << "   ]";
+        }
+      }
+    }
+
     std::cout << std::endl;
   }
 }

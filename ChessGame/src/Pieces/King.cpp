@@ -8,4 +8,6 @@ bool King::isMoveValid(const std::string &from_pos, const std::string &to_pos) {
 
 char King::getSymbol() const { return 'K'; }
 
-IPiece::PieceColor King::getColor() const { return m_color; }
+std::string King::getColor() const {
+  return PieceUtilities::convertPieceColorToStr(m_color);
+}

@@ -1,3 +1,4 @@
+#include "PieceUtilities.h"
 #include "interfaces/IPiece.h"
 
 #pragma once
@@ -11,7 +12,7 @@ public:
 
   char getSymbol() const override;
 
-  PieceColor getColor() const override;
+  std::string getColor() const override;
 
 private:
   PieceColor m_color;

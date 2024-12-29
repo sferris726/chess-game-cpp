@@ -9,4 +9,6 @@ bool Bishop::isMoveValid(const std::string &from_pos,
 
 char Bishop::getSymbol() const { return 'B'; }
 
-IPiece::PieceColor Bishop::getColor() const { return m_color; }
+std::string Bishop::getColor() const {
+  return PieceUtilities::convertPieceColorToStr(m_color);
+}

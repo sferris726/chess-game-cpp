@@ -11,6 +11,6 @@ public:
   virtual bool isMoveValid(const std::string &from_pos,
                            const std::string &to_pos) = 0;
   virtual char getSymbol() const = 0;
-  virtual PieceColor getColor() const = 0;
+  virtual std::string getColor() const = 0;
   virtual ~IPiece(){};
 };

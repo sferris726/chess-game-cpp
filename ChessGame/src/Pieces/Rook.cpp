@@ -8,4 +8,6 @@ bool Rook::isMoveValid(const std::string &from_pos, const std::string &to_pos) {
 
 char Rook::getSymbol() const { return 'R'; }
 
-IPiece::PieceColor Rook::getColor() const { return m_color; }
+std::string Rook::getColor() const {
+  return PieceUtilities::convertPieceColorToStr(m_color);
+}

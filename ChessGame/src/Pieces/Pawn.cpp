@@ -8,4 +8,6 @@ bool Pawn::isMoveValid(const std::string &from_pos, const std::string &to_pos) {
 
 char Pawn::getSymbol() const { return 'P'; }
 
-IPiece::PieceColor Pawn::getColor() const { return m_color; }
+std::string Pawn::getColor() const {
+  return PieceUtilities::convertPieceColorToStr(m_color);
+}

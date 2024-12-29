@@ -9,4 +9,6 @@ bool Queen::isMoveValid(const std::string &from_pos,
 
 char Queen::getSymbol() const { return 'Q'; }
 
-IPiece::PieceColor Queen::getColor() const { return m_color; }
+std::string Queen::getColor() const {
+  return PieceUtilities::convertPieceColorToStr(m_color);
+}
