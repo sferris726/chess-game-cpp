@@ -7,7 +7,7 @@ class Knight : public IPiece {
 public:
   Knight(PieceColor color);
 
-  bool isMoveValid(
+  MoveInfo getMoveInfo(
       const std::string &from_pos, const std::string &to_pos,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
@@ -19,7 +19,10 @@ public:
 
   std::string getColorStr() const override;
 
+  std::pair<std::string, std::string> getLastMove() const override;
+
 private:
   PieceColor m_color;
   std::pair<int, int> m_origin;
+  std::pair<std::string, std::string> m_last_move;
 };

@@ -51,20 +51,39 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
     return false;
   }
 
+  const auto move_info =
+      m_board_map.at(from_pos)->getMoveInfo(from_pos, to_pos, m_board_map);
   // check if move is valid
-  if (!m_board_map.at(from_pos)->isMoveValid(from_pos, to_pos, m_board_map)) {
+  if (!move_info.is_valid) {
     return false;
   }
 
-  // if (m_board_map.at(to_pos) != nullptr) {
-  //   if (piece_color == IPiece::PieceColor::WHITE) {
-  //     // Black was captured
-  //     m_black_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
-  //   } else {
-  //     // White captured
-  //     m_white_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
-  //   }
-  // }
+  std::cout << "ENP " << move_info.en_passant_valid << "\nCASTLING "
+            << move_info.castling_valid;
+
+  if (move_info.en_passant_valid == true) {
+    const std::string opp_pos = move_info.en_passant_opponent;
+    if (piece_color == IPiece::PieceColor::WHITE) {
+      // Black was captured
+      m_black_pieces_captured.push_back(std::move(m_board_map.at(opp_pos)));
+    } else {
+      // White captured
+      m_white_pieces_captured.push_back(std::move(m_board_map.at(opp_pos)));
+    }
+    m_board_map[opp_pos] = nullptr;
+  }
+
+  // TODO: Castling
+
+  if (m_board_map.at(to_pos) != nullptr) {
+    if (piece_color == IPiece::PieceColor::WHITE) {
+      // Black was captured
+      m_black_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
+    } else {
+      // White captured
+      m_white_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
+    }
+  }
 
   m_board_map[to_pos] = std::move(m_board_map[from_pos]);
   m_board_map[from_pos] = nullptr;
@@ -93,7 +112,7 @@ void Board::generateBoard() {
     }
   }
 
-  for (const auto& [pos, piece] : m_board_map) {
+  for (const auto &[pos, piece] : m_board_map) {
     if (piece != nullptr) {
       piece->setOrigin(PieceUtilities::getColNum(pos[0]), std::atoi(&pos[1]));
     }
