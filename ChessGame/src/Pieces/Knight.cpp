@@ -12,7 +12,7 @@ bool Knight::isMoveValid(
     return false;
   }
 
-  if (board_map.at(to_pos)->getColor() == getColor()) {
+  if (board_map.at(to_pos) && board_map.at(to_pos)->getColor() == getColor()) {
     return false;
   }
 

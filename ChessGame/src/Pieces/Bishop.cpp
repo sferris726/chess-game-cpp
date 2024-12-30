@@ -16,25 +16,26 @@ bool Bishop::isMoveValid(
   int col = board_positions[0].first;
   int row = board_positions[0].second;
 
-  if (board_positions[0].second < board_positions[0].second) {
-    while (col < board_positions[1].first && row < board_positions[1].second) {
-      ++col;
+  while (true) {
+    if (board_positions[0].second < board_positions[1].second) {
       ++row;
-
-      std::string pos = std::to_string(col) + std::to_string(row);
-      if (board_map.at(pos)->getColor() == getColor()) {
-        return false;
-      }
-    }
-  } else {
-    while (col > board_positions[1].first && row > board_positions[1].second) {
-      --col;
+    } else {
       --row;
+    }
 
-      std::string pos = std::to_string(col) + std::to_string(row);
-      if (board_map.at(pos)->getColor() == getColor()) {
-        return false;
-      }
+    if (board_positions[0].first < board_positions[1].first) {
+      ++col;
+    } else {
+      --col;
+    }
+
+    std::string pos = std::to_string(col) + std::to_string(row);
+    if (board_map.at(pos) && board_map.at(pos)->getColor() == getColor()) {
+      return false;
+    }
+
+    if (col == board_positions[1].first || row == board_positions[1].second) {
+      break;
     }
   }
 
