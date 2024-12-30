@@ -19,4 +19,6 @@ convertBoardPosition(const std::string &from_pos, const std::string &to_pos);
 std::string getColLetter(int col);
 
 int getColNum(const char col);
+
+IPiece::PieceType convertStrToPieceType(const std::string &str);
 } // namespace PieceUtilities

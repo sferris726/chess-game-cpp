@@ -80,4 +80,24 @@ int getColNum(const char col) {
 
   throw std::runtime_error("Invalid Col letter passed");
 }
+
+IPiece::PieceType convertStrToPieceType(const std::string &str) {
+  if (str == "N") {
+    return IPiece::PieceType::KNIGHT;
+  }
+
+  if (str == "B") {
+    return IPiece::PieceType::BISHOP;
+  }
+
+  if (str == "R") {
+    return IPiece::PieceType::ROOK;
+  }
+
+  if (str == "Q") {
+    return IPiece::PieceType::QUEEN;
+  }
+
+  return IPiece::PieceType::NONE;
+}
 } // namespace PieceUtilities

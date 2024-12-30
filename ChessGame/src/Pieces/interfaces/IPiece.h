@@ -11,15 +11,16 @@
 class IPiece {
 public:
   enum class PieceColor { WHITE, BLACK };
-  enum class PieceType { PAWN, BISHOP, KNIGHT, ROOK, QUEEN, KING };
+  enum class PieceType { NONE, PAWN, BISHOP, KNIGHT, ROOK, QUEEN, KING };
 
   struct MoveInfo {
     bool is_valid;
     bool en_passant_valid;
     bool castling_valid;
+    bool can_pawn_promote;
     std::string en_passant_opponent;
     std::pair<std::string, std::string>
-        castling_pair; // Where the [King, Rook] should move
+        castling_locations; // Where the [King, Rook] should move
   };
 
   virtual MoveInfo getMoveInfo(

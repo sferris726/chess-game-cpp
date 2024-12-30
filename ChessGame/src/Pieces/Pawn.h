@@ -34,6 +34,8 @@ private:
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map,
       const std::pair<int, int> &start, const std::pair<int, int> &end);
 
+  bool enablePawnPromotion(int row);
+
   PieceColor m_color;
   bool m_first_move_made;
   std::pair<int, int> m_origin;

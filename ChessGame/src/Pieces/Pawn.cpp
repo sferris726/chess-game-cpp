@@ -2,6 +2,8 @@
 
 static const int VALID_NUM_SPOTS_FROM_ORIGIN = 3;
 static const int VALID_OPPONENT_MOVES_FROM_ORIGIN = 2;
+static const int ENABLE_PAWN_EXCHANGE_WHITE = 8;
+static const int ENABLE_PAWN_EXCHANGE_BLACK = 1;
 
 Pawn::Pawn(PieceColor color) : m_color{color}, m_first_move_made{false} {}
 
@@ -21,26 +23,32 @@ IPiece::MoveInfo Pawn::getMoveInfo(
     // Move is vertical
     int col = board_positions[0].first;
     int row = board_positions[0].second;
+    int moves_made = 0;
+    int allowable_moves = m_first_move_made ? 1 : 2;
 
     // Make sure nothing blocking move
-    if (m_color == IPiece::PieceColor::WHITE) {
-      while (row < board_positions[1].second) {
+    while (true) {
+      if (m_color == PieceColor::WHITE) {
         ++row;
-        std::string pos =
-            PieceUtilities::getColLetter(col) + std::to_string(row);
-        if (board_map.at(pos) != nullptr) {
-          return move_info;
-        }
-      }
-    } else {
-      while (row > board_positions[1].second) {
+      } else {
         --row;
-        std::string pos =
-            PieceUtilities::getColLetter(col) + std::to_string(row);
-        if (board_map.at(pos) != nullptr) {
-          return move_info;
-        }
       }
+
+      const std::string pos =
+          PieceUtilities::getColLetter(col) + std::to_string(row);
+      if (board_map.at(pos) != nullptr) {
+        return move_info;
+      }
+
+      ++moves_made;
+      if (moves_made == allowable_moves || row == board_positions[1].second) {
+        break;
+      }
+    }
+
+    // Check we've reached the target
+    if (row != board_positions[1].second) {
+      return move_info;
     }
   } else {
     // Move is diagonal
@@ -89,6 +97,7 @@ IPiece::MoveInfo Pawn::getMoveInfo(
   m_last_move.first = from_pos;
   m_last_move.second = to_pos;
   move_info.is_valid = true;
+  move_info.can_pawn_promote = enablePawnPromotion(board_positions[1].second);
   return move_info;
 }
 
@@ -147,4 +156,12 @@ std::pair<bool, std::string> Pawn::checkEnPassant(
       VALID_OPPONENT_MOVES_FROM_ORIGIN;
 
   return std::pair(valid_opponent_move, opp_pos);
+}
+
+bool Pawn::enablePawnPromotion(int row) {
+  if (m_color == PieceColor::WHITE) {
+    return row == ENABLE_PAWN_EXCHANGE_WHITE;
+  } else {
+    return row == ENABLE_PAWN_EXCHANGE_BLACK;
+  }
 }

@@ -3,6 +3,7 @@
 #include "iostream"
 
 static const int PAWNS = 8;
+static const std::regex PIECE_PATTERN("^[rnbqRNBQ]$");
 
 Board::Board(PieceFactory &piece_factory) : m_piece_factory{piece_factory} {
   generateBoard();
@@ -58,9 +59,6 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
     return false;
   }
 
-  std::cout << "ENP " << move_info.en_passant_valid << "\nCASTLING "
-            << move_info.castling_valid;
-
   if (move_info.en_passant_valid == true) {
     const std::string opp_pos = move_info.en_passant_opponent;
     if (piece_color == IPiece::PieceColor::WHITE) {
@@ -85,7 +83,12 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
     }
   }
 
-  m_board_map[to_pos] = std::move(m_board_map[from_pos]);
+  if (move_info.can_pawn_promote) {
+    handlePawnPromotion(to_pos, piece_color);
+  } else {
+    m_board_map[to_pos] = std::move(m_board_map[from_pos]);
+  }
+  
   m_board_map[from_pos] = nullptr;
   return true;
 }
@@ -150,5 +153,27 @@ void Board::generatePawnRow(
                                 : col_letter + "7";
     in_map.emplace(key,
                    m_piece_factory.createPiece(IPiece::PieceType::PAWN, color));
+  }
+}
+
+void Board::handlePawnPromotion(const std::string &pos,
+                                const IPiece::PieceColor piece_color) {
+  std::string promotion_piece;
+  std::cout << "Pawn promotion avaiable, enter the piece you would like to "
+               "promote to: ";
+  std::cin >> promotion_piece;
+  if (promotion_piece.length() == 1 &&
+      std::regex_match(promotion_piece, PIECE_PATTERN)) {
+    std::transform(promotion_piece.begin(), promotion_piece.end(),
+                   promotion_piece.begin(), ::toupper);
+    const IPiece::PieceType piece =
+        PieceUtilities::convertStrToPieceType(promotion_piece);
+    m_board_map.erase(pos); // Remove the pawn
+    m_board_map.emplace(pos, m_piece_factory.createPiece(
+                                 piece, piece_color)); // Emplace promoted piece
+  } else {
+    std::cout << "Invalid input, please enter a valid letter:\nQ = Queen\nR = "
+                 "Rook\nN = Knight\nB = Bishop\n";
+    handlePawnPromotion(pos, piece_color);
   }
 }

@@ -2,7 +2,10 @@
 #include "PieceFactory.h"
 #include "PieceUtilities.h"
 #include "interfaces/IPieceManager.h"
+#include <algorithm>
+#include <cctype>
 #include <map>
+#include <regex>
 
 #pragma once
 
@@ -23,6 +26,8 @@ private:
   void
   generateNonPawnRow(std::map<std::string, std::unique_ptr<IPiece>> &in_map,
                      IPiece::PieceColor color);
+  void handlePawnPromotion(const std::string &pos,
+                           const IPiece::PieceColor piece_color);
 
   PieceFactory &m_piece_factory;
   std::function<void()> m_game_over_callback;
