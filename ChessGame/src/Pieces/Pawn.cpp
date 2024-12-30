@@ -1,6 +1,7 @@
 #include "Pawn.h"
 
-Pawn::Pawn(PieceColor color) : m_color{color}, m_first_move_made{false} {}
+Pawn::Pawn(PieceColor color)
+    : m_color{color}, m_first_move_made{false}, m_squares_from_origin{0} {}
 
 bool Pawn::isMoveValid(
     const std::string &from_pos, const std::string &to_pos,
@@ -22,7 +23,8 @@ bool Pawn::isMoveValid(
     if (m_color == IPiece::PieceColor::WHITE) {
       while (row < board_positions[1].second) {
         ++row;
-        std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
+        std::string pos =
+            PieceUtilities::getColLetter(col) + std::to_string(row);
         if (board_map.at(pos) != nullptr) {
           return false;
         }
@@ -30,7 +32,8 @@ bool Pawn::isMoveValid(
     } else {
       while (row > board_positions[1].second) {
         --row;
-        std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
+        std::string pos =
+            PieceUtilities::getColLetter(col) + std::to_string(row);
         if (board_map.at(pos) != nullptr) {
           return false;
         }
@@ -39,6 +42,7 @@ bool Pawn::isMoveValid(
   } else {
     // Move is diagonal
     if (board_map.at(to_pos) == nullptr) {
+      // TODO: check en passant here
       return false; // Opponent doesn't exist, not valid
     }
 
@@ -65,11 +69,14 @@ bool Pawn::isMoveValid(
   return true;
 }
 
+void Pawn::setOrigin(const int col, const int row) {
+  m_origin.first = col;
+  m_origin.second = row;
+}
+
 char Pawn::getSymbol() const { return 'P'; }
 
-IPiece::PieceColor Pawn::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor Pawn::getColor() const { return m_color; }
 
 std::string Pawn::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);

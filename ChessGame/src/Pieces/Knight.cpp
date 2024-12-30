@@ -19,8 +19,10 @@ bool Knight::isMoveValid(
   // Start with from position
   int col = board_positions[0].first;
   int row = board_positions[0].second;
+  int col_diff = std::abs(col - board_positions[1].first);
+  int row_diff = std::abs(row - board_positions[1].second);
 
-  if (std::abs(col - board_positions[1].first == 2)) {
+  if (col_diff == 2) {
     // Moving vertically
     if (col < board_positions[1].first) {
       col = col + 2;
@@ -33,7 +35,7 @@ bool Knight::isMoveValid(
          row - 1 != board_positions[1].second)) {
       return false;
     }
-  } else if (std::abs(row - board_positions[1].second == 2)) {
+  } else if (row_diff == 2) {
     // Moving horizontally
     if (row < board_positions[1].second) {
       row = row + 2;
@@ -53,11 +55,14 @@ bool Knight::isMoveValid(
   return true;
 }
 
+void Knight::setOrigin(const int col, const int row) {
+  m_origin.first = col;
+  m_origin.second = row;
+}
+
 char Knight::getSymbol() const { return 'N'; }
 
-IPiece::PieceColor Knight::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor Knight::getColor() const { return m_color; }
 
 std::string Knight::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);

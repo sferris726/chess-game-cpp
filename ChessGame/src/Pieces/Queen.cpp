@@ -89,11 +89,14 @@ bool Queen::isMoveValid(
   return true;
 }
 
+void Queen::setOrigin(const int col, const int row) {
+  m_origin.first = col;
+  m_origin.second = row;
+}
+
 char Queen::getSymbol() const { return 'Q'; }
 
-IPiece::PieceColor Queen::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor Queen::getColor() const { return m_color; }
 
 std::string Queen::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);

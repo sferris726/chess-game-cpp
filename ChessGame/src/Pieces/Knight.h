@@ -11,6 +11,8 @@ public:
       const std::string &from_pos, const std::string &to_pos,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
+  void setOrigin(const int col, const int row) override;
+
   char getSymbol() const override;
 
   PieceColor getColor() const override;
@@ -19,4 +21,5 @@ public:
 
 private:
   PieceColor m_color;
+  std::pair<int, int> m_origin;
 };

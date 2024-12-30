@@ -22,14 +22,16 @@ bool King::isMoveValid(
   if (col == board_positions[1].first) {
     // Moving horizontally
     int target_row = row < board_positions[1].second ? ++row : --row;
-    std::string pos = PieceUtilities::getColLetter(col) + std::to_string(target_row);
+    std::string pos =
+        PieceUtilities::getColLetter(col) + std::to_string(target_row);
     if (board_map.at(pos) != nullptr) {
       return false;
     }
   } else if (row == board_positions[1].second) {
     // Moving veritcally
     int target_col = col < board_positions[1].first ? ++col : --col;
-    std::string pos = PieceUtilities::getColLetter(target_col) + std::to_string(row);
+    std::string pos =
+        PieceUtilities::getColLetter(target_col) + std::to_string(row);
     if (board_map.at(pos) != nullptr) {
       return false;
     }
@@ -55,11 +57,14 @@ bool King::isMoveValid(
   return true;
 }
 
+void King::setOrigin(const int col, const int row) {
+  m_origin.first = col;
+  m_origin.second = row;
+}
+
 char King::getSymbol() const { return 'K'; }
 
-IPiece::PieceColor King::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor King::getColor() const { return m_color; }
 
 std::string King::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);

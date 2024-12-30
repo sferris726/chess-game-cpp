@@ -27,4 +27,6 @@ private:
   PieceFactory &m_piece_factory;
   std::function<void()> m_game_over_callback;
   std::map<std::string, std::unique_ptr<IPiece>> m_board_map;
+  std::vector<std::unique_ptr<IPiece>> m_white_pieces_captured;
+  std::vector<std::unique_ptr<IPiece>> m_black_pieces_captured;
 };

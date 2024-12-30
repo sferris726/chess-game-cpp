@@ -47,11 +47,14 @@ bool Bishop::isMoveValid(
   return true;
 }
 
+void Bishop::setOrigin(const int col, const int row) {
+  m_origin.first = col;
+  m_origin.second = row;
+}
+
 char Bishop::getSymbol() const { return 'B'; }
 
-IPiece::PieceColor Bishop::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor Bishop::getColor() const { return m_color; }
 
 std::string Bishop::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);

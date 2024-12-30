@@ -60,11 +60,14 @@ bool Rook::isMoveValid(
   return true;
 }
 
+void Rook::setOrigin(const int col, const int row) {
+  m_origin.first = col;
+  m_origin.second = row;
+}
+
 char Rook::getSymbol() const { return 'R'; }
 
-IPiece::PieceColor Rook::getColor() const {
-  return m_color;
-}
+IPiece::PieceColor Rook::getColor() const { return m_color; }
 
 std::string Rook::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);

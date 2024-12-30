@@ -56,6 +56,16 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
     return false;
   }
 
+  // if (m_board_map.at(to_pos) != nullptr) {
+  //   if (piece_color == IPiece::PieceColor::WHITE) {
+  //     // Black was captured
+  //     m_black_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
+  //   } else {
+  //     // White captured
+  //     m_white_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
+  //   }
+  // }
+
   m_board_map[to_pos] = std::move(m_board_map[from_pos]);
   m_board_map[from_pos] = nullptr;
   return true;
@@ -80,6 +90,12 @@ void Board::generateBoard() {
         m_board_map.emplace(PieceUtilities::getColLetter(j) + std::to_string(i),
                             nullptr);
       }
+    }
+  }
+
+  for (const auto& [pos, piece] : m_board_map) {
+    if (piece != nullptr) {
+      piece->setOrigin(PieceUtilities::getColNum(pos[0]), std::atoi(&pos[1]));
     }
   }
 }
