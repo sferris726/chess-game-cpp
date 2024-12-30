@@ -26,7 +26,7 @@ void Board::displayBoard() {
 
         if (m_board_map[board_pos]) {
           std::cout << m_board_map[board_pos]->getSymbol()
-                    << m_board_map[board_pos]->getColor() << " ]";
+                    << m_board_map[board_pos]->getColorStr() << " ]";
         } else {
           std::cout << "   ]";
         }
@@ -41,11 +41,24 @@ void Board::displayBoard() {
 
 bool Board::movePiece(const IPiece::PieceColor piece_color,
                       const std::string &from_pos, const std::string &to_pos) {
-  // check if board spot is occupied
-  // check the occupied piece is right color
+  // make sure from_pos and to_pos are different and from_pos has a piece
+  if (from_pos == to_pos || m_board_map.at(from_pos) == nullptr) {
+    return false;
+  }
+
+  // make sure from_pos is the correct color
+  if (m_board_map.at(from_pos)->getColor() != piece_color) {
+    return false;
+  }
+
   // check if move is valid
-  // use std::move to move ownership of the ptr
-  return false;
+  if (!m_board_map.at(from_pos)->isMoveValid(from_pos, to_pos, m_board_map)) {
+    return false;
+  }
+
+  m_board_map[to_pos] = std::move(m_board_map[from_pos]);
+  m_board_map[from_pos] = nullptr;
+  return true;
 }
 
 void Board::onGameOver(std::function<void()> callback) {

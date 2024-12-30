@@ -13,7 +13,9 @@ public:
 
   char getSymbol() const override;
 
-  std::string getColor() const override;
+  PieceColor getColor() const override;
+
+  std::string getColorStr() const override;
 
 private:
   PieceColor m_color;

@@ -19,4 +19,5 @@ private:
   IPieceManager &m_piece_manager;
   bool m_is_game_over;
   int m_turn_count;
+  bool m_invalid_input;
 };

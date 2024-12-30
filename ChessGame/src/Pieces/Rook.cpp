@@ -27,7 +27,7 @@ bool Rook::isMoveValid(
         --row;
       }
 
-      std::string pos = std::to_string(col) + std::to_string(row);
+      std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) != nullptr) {
         return false;
       }
@@ -44,7 +44,7 @@ bool Rook::isMoveValid(
         --col;
       }
 
-      std::string pos = std::to_string(col) + std::to_string(row);
+      std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) != nullptr) {
         return false;
       }
@@ -62,6 +62,10 @@ bool Rook::isMoveValid(
 
 char Rook::getSymbol() const { return 'R'; }
 
-std::string Rook::getColor() const {
+IPiece::PieceColor Rook::getColor() const {
+  return m_color;
+}
+
+std::string Rook::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);
 }

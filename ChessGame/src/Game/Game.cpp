@@ -4,7 +4,7 @@ static const std::regex PATTERN("^[a-h1-8]+$");
 
 Game::Game(IBoard &board, IPieceManager &piece_manager)
     : m_board{board}, m_piece_manager{piece_manager}, m_is_game_over{false},
-      m_turn_count{0} {
+      m_turn_count{0}, m_invalid_input{false} {
   m_board.onGameOver([this]() { m_is_game_over = true; });
 }
 
@@ -14,8 +14,11 @@ void Game::start() {
                "position and a4 is the end position\n\n";
 
   while (true) {
-    m_board.displayBoard();
+    if (!m_invalid_input) {
+      m_board.displayBoard();
+    }
 
+    m_invalid_input = false; // Reset on every loop
     std::string input;
     std::string from_pos;
     std::string to_pos;
@@ -35,6 +38,7 @@ void Game::start() {
       if (ss.eof()) {
         if (!std::regex_match(from_pos, PATTERN) ||
             !std::regex_match(to_pos, PATTERN)) {
+          m_invalid_input = true;
           std::cout << "Invalid input, please try again" << std::endl;
           continue;
         }
@@ -43,13 +47,16 @@ void Game::start() {
         if (success) {
           m_turn_count++;
         } else {
+          m_invalid_input = true;
           std::cout << "Invalid move, please try again" << std::endl;
         }
       } else {
+        m_invalid_input = true;
         std::cout << "Please enter exactly 2 inputs (start, end). Ex. a2 a4"
                   << std::endl;
       }
     } else {
+      m_invalid_input = true;
       std::cout << "Please enter exactly 2 inputs (start, end). Ex. a2 a4"
                 << std::endl;
     }

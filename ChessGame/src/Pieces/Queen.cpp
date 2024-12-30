@@ -28,7 +28,7 @@ bool Queen::isMoveValid(
         --row;
       }
 
-      std::string pos = std::to_string(col) + std::to_string(row);
+      std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) != nullptr) {
         return false;
       }
@@ -46,7 +46,7 @@ bool Queen::isMoveValid(
         --col;
       }
 
-      std::string pos = std::to_string(col) + std::to_string(row);
+      std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) != nullptr) {
         return false;
       }
@@ -70,7 +70,7 @@ bool Queen::isMoveValid(
         --col;
       }
 
-      std::string pos = std::to_string(col) + std::to_string(row);
+      std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) && board_map.at(pos)->getColor() == getColor()) {
         return false;
       }
@@ -91,6 +91,10 @@ bool Queen::isMoveValid(
 
 char Queen::getSymbol() const { return 'Q'; }
 
-std::string Queen::getColor() const {
+IPiece::PieceColor Queen::getColor() const {
+  return m_color;
+}
+
+std::string Queen::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);
 }

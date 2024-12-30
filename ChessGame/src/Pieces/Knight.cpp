@@ -55,6 +55,10 @@ bool Knight::isMoveValid(
 
 char Knight::getSymbol() const { return 'N'; }
 
-std::string Knight::getColor() const {
+IPiece::PieceColor Knight::getColor() const {
+  return m_color;
+}
+
+std::string Knight::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);
 }

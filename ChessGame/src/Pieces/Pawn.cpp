@@ -15,23 +15,25 @@ bool Pawn::isMoveValid(
   // Check if move is vertical or diagonal
   if (board_positions[0].first == board_positions[1].first) {
     // Move is vertical
-    const std::string col(1, from_pos[0]);
+    int col = board_positions[0].first;
     int row = board_positions[0].second;
 
     // Make sure nothing blocking move
     if (m_color == IPiece::PieceColor::WHITE) {
       while (row < board_positions[1].second) {
-        if (board_map.at(col + std::to_string(row)) != nullptr) {
+        ++row;
+        std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
+        if (board_map.at(pos) != nullptr) {
           return false;
         }
-        ++row;
       }
     } else {
       while (row > board_positions[1].second) {
-        if (board_map.at(col + std::to_string(row)) != nullptr) {
+        --row;
+        std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
+        if (board_map.at(pos) != nullptr) {
           return false;
         }
-        --row;
       }
     }
   } else {
@@ -65,6 +67,10 @@ bool Pawn::isMoveValid(
 
 char Pawn::getSymbol() const { return 'P'; }
 
-std::string Pawn::getColor() const {
+IPiece::PieceColor Pawn::getColor() const {
+  return m_color;
+}
+
+std::string Pawn::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);
 }

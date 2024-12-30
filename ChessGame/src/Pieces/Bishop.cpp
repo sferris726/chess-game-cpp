@@ -29,7 +29,7 @@ bool Bishop::isMoveValid(
       --col;
     }
 
-    std::string pos = std::to_string(col) + std::to_string(row);
+    std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
     if (board_map.at(pos) && board_map.at(pos)->getColor() == getColor()) {
       return false;
     }
@@ -49,6 +49,10 @@ bool Bishop::isMoveValid(
 
 char Bishop::getSymbol() const { return 'B'; }
 
-std::string Bishop::getColor() const {
+IPiece::PieceColor Bishop::getColor() const {
+  return m_color;
+}
+
+std::string Bishop::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);
 }
