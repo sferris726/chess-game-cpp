@@ -21,6 +21,8 @@ public:
 
   std::pair<std::string, std::string> getLastMove() const override;
 
+  std::vector<AttackPattern> getAttackPatterns() const override;
+
 private:
   /**
    * @brief Check whether the en passant move is valid

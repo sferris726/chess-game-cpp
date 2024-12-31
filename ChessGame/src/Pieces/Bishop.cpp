@@ -67,3 +67,9 @@ std::string Bishop::getColorStr() const {
 std::pair<std::string, std::string> Bishop::getLastMove() const {
   return m_last_move;
 }
+
+std::vector<IPiece::AttackPattern> Bishop::getAttackPatterns() const {
+  std::vector<AttackPattern> ret;
+  ret.push_back(AttackPattern::DIAGONAL_ALL);
+  return ret;
+}

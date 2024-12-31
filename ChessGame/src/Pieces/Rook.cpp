@@ -80,3 +80,10 @@ std::string Rook::getColorStr() const {
 std::pair<std::string, std::string> Rook::getLastMove() const {
   return m_last_move;
 }
+
+std::vector<IPiece::AttackPattern> Rook::getAttackPatterns() const {
+  std::vector<AttackPattern> ret;
+  ret.push_back(AttackPattern::HORIZONTAL_ALL);
+  ret.push_back(AttackPattern::VERTICAL_ALL);
+  return ret;
+}

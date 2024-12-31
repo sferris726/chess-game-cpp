@@ -12,6 +12,7 @@ class IPiece {
 public:
   enum class PieceColor { WHITE, BLACK };
   enum class PieceType { NONE, PAWN, BISHOP, KNIGHT, ROOK, QUEEN, KING };
+  enum class AttackPattern { VERTICAL_ALL, HORIZONTAL_ALL, VERTICAL_ONE, HORIZONTAL_ONE, DIAGONAL_ALL, DIAGONAL_ONE, L_SHAPE };
 
   struct MoveInfo {
     bool is_valid;
@@ -31,5 +32,6 @@ public:
   virtual PieceColor getColor() const = 0;
   virtual std::string getColorStr() const = 0;
   virtual std::pair<std::string, std::string> getLastMove() const = 0;
+  virtual std::vector<AttackPattern> getAttackPatterns() const = 0;
   virtual ~IPiece(){};
 };

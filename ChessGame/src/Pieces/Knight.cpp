@@ -75,3 +75,9 @@ std::string Knight::getColorStr() const {
 std::pair<std::string, std::string> Knight::getLastMove() const {
   return m_last_move;
 }
+
+std::vector<IPiece::AttackPattern> Knight::getAttackPatterns() const {
+  std::vector<AttackPattern> ret;
+  ret.push_back(AttackPattern::L_SHAPE);
+  return ret;
+}

@@ -109,3 +109,11 @@ std::string Queen::getColorStr() const {
 std::pair<std::string, std::string> Queen::getLastMove() const {
   return m_last_move;
 }
+
+std::vector<IPiece::AttackPattern> Queen::getAttackPatterns() const {
+  std::vector<AttackPattern> ret;
+  ret.push_back(AttackPattern::HORIZONTAL_ALL);
+  ret.push_back(AttackPattern::VERTICAL_ALL);
+  ret.push_back(AttackPattern::DIAGONAL_ALL);
+  return ret;
+}

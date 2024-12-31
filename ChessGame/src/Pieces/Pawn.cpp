@@ -118,6 +118,12 @@ std::pair<std::string, std::string> Pawn::getLastMove() const {
   return m_last_move;
 }
 
+std::vector<IPiece::AttackPattern> Pawn::getAttackPatterns() const {
+  std::vector<AttackPattern> ret;
+  ret.push_back(AttackPattern::DIAGONAL_ONE);
+  return ret;
+}
+
 std::pair<bool, std::string> Pawn::checkEnPassant(
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map,
     const std::pair<int, int> &start, const std::pair<int, int> &end) {

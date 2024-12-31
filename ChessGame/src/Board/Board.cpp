@@ -160,7 +160,7 @@ void Board::handlePawnPromotion(const std::string &pos,
                                 const IPiece::PieceColor piece_color) {
   std::string promotion_piece = InputHandler::getInput(
       "Pawn promotion avaiable, enter the piece you would like to promote to:");
-      
+
   if (promotion_piece.length() == 1 &&
       std::regex_match(promotion_piece, PIECE_PATTERN)) {
     std::transform(promotion_piece.begin(), promotion_piece.end(),

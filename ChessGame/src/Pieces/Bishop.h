@@ -21,6 +21,8 @@ public:
 
   std::pair<std::string, std::string> getLastMove() const override;
 
+  std::vector<AttackPattern> getAttackPatterns() const override;
+
 private:
   PieceColor m_color;
   std::pair<int, int> m_origin;
