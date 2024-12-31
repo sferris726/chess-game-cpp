@@ -1,6 +1,7 @@
 #include "Knight.h"
 
-Knight::Knight(PieceColor color) : m_color{color} {}
+Knight::Knight(PieceColor color)
+    : m_color{color}, m_last_move{std::pair("-", "-")} {}
 
 IPiece::MoveInfo Knight::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,

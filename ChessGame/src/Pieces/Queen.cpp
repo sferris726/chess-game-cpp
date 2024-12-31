@@ -1,6 +1,7 @@
 #include "Queen.h"
 
-Queen::Queen(PieceColor color) : m_color{color} {}
+Queen::Queen(PieceColor color)
+    : m_color{color}, m_last_move{std::pair("-", "-")} {}
 
 IPiece::MoveInfo Queen::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,

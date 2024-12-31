@@ -10,7 +10,14 @@ static const std::set<ICheckMateTracker::Direction> DIRECTIONS = {
     ICheckMateTracker::Direction::WEST,
     ICheckMateTracker::Direction::NORTH_WEST};
 
-CheckMateTracker::CheckMateTracker() {}
+CheckMateTracker::CheckMateTracker()
+    : m_white_king_in_check{false}, m_black_king_in_check{false} {}
+
+void CheckMateTracker::onKingInCheckChange(
+    std::function<void(const IPiece::PieceColor color, const bool in_check)>
+        callback) {
+  m_king_in_check_callback = callback;
+}
 
 void CheckMateTracker::onCheckMate(std::function<void()> callback) {
   m_checkmate_callback = callback;
@@ -76,7 +83,54 @@ void CheckMateTracker::scanBoard(
     if (king_in_check) {
       std::cout << "King is in Check!\n";
     }
+
+    // Send out updates if check status has changed
+    if (king_color == IPiece::PieceColor::WHITE) {
+      if (m_white_king_in_check != king_in_check) {
+        m_white_king_in_check = king_in_check;
+        m_king_in_check_callback(king_color, king_in_check);
+      }
+    } else {
+      if (m_black_king_in_check != king_in_check) {
+        m_black_king_in_check = king_in_check;
+        m_king_in_check_callback(king_color, king_in_check);
+      }
+    }
   }
+}
+
+bool CheckMateTracker::castlingScan(
+    const IPiece::PieceColor color, const std::string &pos1,
+    const std::string &pos2,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  // Check if the Knights can attack from the L pattern
+  for (const auto &[pos, piece] : board_map) {
+    if (piece && piece->getSymbol() == 'N' && piece->getColor() != color) {
+      if (checkLPatternThreat(pos1, pos).first ||
+          checkLPatternThreat(pos2, pos).first) {
+        // King is in check
+        std::cout << "Castling invalid, move would put King in check or moved "
+                     "through check\n";
+        return false;
+      }
+    }
+  }
+
+  // Check if King is threatened by other pieces
+  for (const Direction direction : DIRECTIONS) {
+    const bool pos1_in_check =
+        isCheckAndDirectionMovable(direction, pos1, color, board_map).first;
+    const bool pos2_in_check =
+        isCheckAndDirectionMovable(direction, pos2, color, board_map).first;
+
+    if (pos1_in_check || pos2_in_check) {
+      std::cout << "Castling invalid, move would put King in check or moved "
+                   "through check\n";
+      return false;
+    }
+  }
+
+  return true;
 }
 
 std::pair<bool, std::set<ICheckMateTracker::Direction>>
@@ -179,12 +233,16 @@ std::pair<bool, bool> CheckMateTracker::isCheckAndDirectionMovable(
     }
 
     if ((king_col <= 0 || king_col > 7) || (king_row < 1 || king_row > 8)) {
-        break; // Out of bounds
+      break; // Out of bounds
     }
 
     std::string curr_pos =
         PieceUtilities::getColLetter(king_col) + std::to_string(king_row);
     if (board_map.at(curr_pos) != nullptr) {
+      if (board_map.at(curr_pos)->getSymbol() == 'N') {
+        continue; // Already checked for Knight attacks
+      }
+
       if (board_map.at(curr_pos)->getColor() != king_color) {
         // Found an opponent piece, check if the attack pattern can threaten the
         // King

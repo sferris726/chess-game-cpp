@@ -1,6 +1,7 @@
 #include "Rook.h"
 
-Rook::Rook(PieceColor color) : m_color{color} {}
+Rook::Rook(PieceColor color)
+    : m_color{color}, m_last_move{std::pair("-", "-")} {}
 
 IPiece::MoveInfo Rook::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,

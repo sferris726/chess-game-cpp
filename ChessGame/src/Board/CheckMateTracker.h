@@ -17,6 +17,15 @@ public:
       const IPiece::PieceColor king_color,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
+  bool castlingScan(
+      const IPiece::PieceColor color, const std::string &pos1,
+      const std::string &pos2,
+      const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
+
+  void onKingInCheckChange(
+      std::function<void(const IPiece::PieceColor color, const bool in_check)>
+          callback) override;
+
   void onCheckMate(std::function<void()> callback) override;
 
 private:
@@ -52,5 +61,9 @@ private:
   bool isOneRankFromKing(Direction direction, int king_col, int king_row,
                          const std::string &piece_pos);
 
+  std::function<void(const IPiece::PieceColor color, const bool in_check)>
+      m_king_in_check_callback;
   std::function<void()> m_checkmate_callback;
+  bool m_white_king_in_check;
+  bool m_black_king_in_check;
 };

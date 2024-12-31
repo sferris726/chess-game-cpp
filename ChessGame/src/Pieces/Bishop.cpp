@@ -1,6 +1,7 @@
 #include "Bishop.h"
 
-Bishop::Bishop(PieceColor color) : m_color{color} {}
+Bishop::Bishop(PieceColor color)
+    : m_color{color}, m_last_move{std::pair("-", "-")} {}
 
 IPiece::MoveInfo Bishop::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,

@@ -5,7 +5,9 @@ static const int VALID_OPPONENT_MOVES_FROM_ORIGIN = 2;
 static const int ENABLE_PAWN_EXCHANGE_WHITE = 8;
 static const int ENABLE_PAWN_EXCHANGE_BLACK = 1;
 
-Pawn::Pawn(PieceColor color) : m_color{color}, m_first_move_made{false} {}
+Pawn::Pawn(PieceColor color)
+    : m_color{color}, m_first_move_made{false}, m_last_move{
+                                                    std::pair("-", "-")} {}
 
 IPiece::MoveInfo Pawn::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,

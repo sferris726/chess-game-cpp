@@ -1,6 +1,7 @@
 #include "King.h"
 
-King::King(PieceColor color) : m_color{color} {}
+King::King(PieceColor color)
+    : m_color{color}, m_last_move{std::pair("-", "-")} {}
 
 IPiece::MoveInfo King::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,
