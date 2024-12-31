@@ -1,3 +1,4 @@
+#include "interfaces/ICheckMateTracker.h"
 #include "interfaces/IPiece.h"
 #include <vector>
 
@@ -21,4 +22,8 @@ std::string getColLetter(int col);
 int getColNum(const char col);
 
 IPiece::PieceType convertStrToPieceType(const std::string &str);
+
+bool canAttackPatternThreaten(ICheckMateTracker::Direction direction,
+                              IPiece::AttackPattern attack,
+                              bool is_one_rank_from);
 } // namespace PieceUtilities

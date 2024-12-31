@@ -100,4 +100,31 @@ IPiece::PieceType convertStrToPieceType(const std::string &str) {
 
   return IPiece::PieceType::NONE;
 }
+
+bool canAttackPatternThreaten(ICheckMateTracker::Direction direction,
+                              IPiece::AttackPattern attack,
+                              bool is_one_rank_from) {
+  switch (direction) {
+  case ICheckMateTracker::Direction::NORTH:
+  case ICheckMateTracker::Direction::SOUTH:
+    return attack == IPiece::AttackPattern::VERTICAL_ALL ||
+           (is_one_rank_from && attack == IPiece::AttackPattern::VERTICAL_ONE);
+
+  case ICheckMateTracker::Direction::NORTH_EAST:
+  case ICheckMateTracker::Direction::SOUTH_EAST:
+  case ICheckMateTracker::Direction::NORTH_WEST:
+  case ICheckMateTracker::Direction::SOUTH_WEST:
+    return attack == IPiece::AttackPattern::DIAGONAL_ALL ||
+           (is_one_rank_from && attack == IPiece::AttackPattern::DIAGONAL_ONE);
+
+  case ICheckMateTracker::Direction::EAST:
+  case ICheckMateTracker::Direction::WEST:
+    return attack == IPiece::AttackPattern::HORIZONTAL_ALL ||
+           (is_one_rank_from &&
+            attack == IPiece::AttackPattern::HORIZONTAL_ONE);
+
+  default:
+    return false;
+  }
+}
 } // namespace PieceUtilities

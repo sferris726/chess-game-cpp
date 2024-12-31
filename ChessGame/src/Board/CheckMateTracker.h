@@ -18,21 +18,36 @@ public:
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
 private:
-  enum class Direction {
-    NORTH,
-    NORTH_EAST,
-    EAST,
-    SOUTH_EAST,
-    SOUTH,
-    SOUTH_WEST,
-    WEST,
-    NORTH_WEST
-  };
+  /**
+   * @brief Check L Shape attack threats
+   *
+   * @param king_pos
+   * @param knight_pos
+   * @returns Pair of if the king is in check and Directions threatened that
+   * should be excluded
+   */
+  std::pair<bool, std::set<Direction>>
+  checkLPatternThreat(const std::string &king_pos,
+                      const std::string &knight_pos);
 
-  bool isDirectionSafe(
+  /**
+   * @brief Is the king in check for this direction and is the direction safe to
+   * move out of check
+   *
+   * @param direction The direction the King can go
+   * @param king_pos The current position of the King
+   * @param king_color The piece color
+   * @param board_map The board
+   * @returns Pair of [is_check, is_direction_movable]
+   */
+  std::pair<bool, bool> isCheckAndDirectionMovable(
       Direction direction, const std::string &king_pos,
       const IPiece::PieceColor king_color,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
+
+  bool inBoundsCheck(Direction direction, const std::string &pos);
+
+  bool isOneRankFromKing(Direction direction, int king_col, int king_row, const std::string& piece_pos);
 
   static std::array<Direction, 8> m_directions;
 };

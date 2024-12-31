@@ -12,7 +12,15 @@ class IPiece {
 public:
   enum class PieceColor { WHITE, BLACK };
   enum class PieceType { NONE, PAWN, BISHOP, KNIGHT, ROOK, QUEEN, KING };
-  enum class AttackPattern { VERTICAL_ALL, HORIZONTAL_ALL, VERTICAL_ONE, HORIZONTAL_ONE, DIAGONAL_ALL, DIAGONAL_ONE, L_SHAPE };
+  enum class AttackPattern {
+    VERTICAL_ALL,
+    HORIZONTAL_ALL,
+    VERTICAL_ONE,
+    HORIZONTAL_ONE,
+    DIAGONAL_ALL,
+    DIAGONAL_ONE,
+    L_SHAPE
+  };
 
   struct MoveInfo {
     bool is_valid;
