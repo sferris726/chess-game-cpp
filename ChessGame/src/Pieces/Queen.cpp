@@ -21,7 +21,7 @@ IPiece::MoveInfo Queen::getMoveInfo(
   int row = board_positions[0].second;
 
   if (col == board_positions[1].first) {
-    // Moving horizontally
+    // Moving vertically
     while (true) {
       if (row < board_positions[1].second) {
         ++row;
@@ -39,9 +39,9 @@ IPiece::MoveInfo Queen::getMoveInfo(
       }
     }
   } else if (row == board_positions[1].second) {
-    // Moving vertically
+    // Moving horizontally
     while (true) {
-      if (col < board_positions[1].second) {
+      if (col < board_positions[1].first) {
         ++col;
       } else {
         --col;

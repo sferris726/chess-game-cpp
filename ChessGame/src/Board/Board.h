@@ -2,6 +2,7 @@
 #include "InputHandler.h"
 #include "PieceFactory.h"
 #include "PieceUtilities.h"
+#include "interfaces/ICheckMateTracker.h"
 #include "interfaces/IPieceManager.h"
 #include <algorithm>
 #include <cctype>
@@ -12,7 +13,7 @@
 
 class Board : public IBoard {
 public:
-  Board(PieceFactory &piece_factory);
+  Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker);
 
   void displayBoard() override;
   bool movePiece(const IPiece::PieceColor piece_color,
@@ -31,6 +32,7 @@ private:
                            const IPiece::PieceColor piece_color);
 
   PieceFactory &m_piece_factory;
+  ICheckMateTracker &m_checkmate_tracker;
   std::function<void()> m_game_over_callback;
   std::map<std::string, std::unique_ptr<IPiece>> m_board_map;
   std::vector<std::unique_ptr<IPiece>> m_white_pieces_captured;

@@ -17,6 +17,8 @@ public:
       const IPiece::PieceColor king_color,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
+  void onCheckMate(std::function<void()> callback) override;
+
 private:
   /**
    * @brief Check L Shape attack threats
@@ -47,7 +49,8 @@ private:
 
   bool inBoundsCheck(Direction direction, const std::string &pos);
 
-  bool isOneRankFromKing(Direction direction, int king_col, int king_row, const std::string& piece_pos);
+  bool isOneRankFromKing(Direction direction, int king_col, int king_row,
+                         const std::string &piece_pos);
 
-  static std::array<Direction, 8> m_directions;
+  std::function<void()> m_checkmate_callback;
 };

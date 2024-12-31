@@ -1,10 +1,19 @@
 #include "CheckMateTracker.h"
 
-CheckMateTracker::CheckMateTracker() {
-  m_directions = {Direction::NORTH, Direction::NORTH_EAST,
-                  Direction::EAST,  Direction::SOUTH_EAST,
-                  Direction::SOUTH, Direction::SOUTH_WEST,
-                  Direction::WEST,  Direction::NORTH_WEST};
+static const std::set<ICheckMateTracker::Direction> DIRECTIONS = {
+    ICheckMateTracker::Direction::NORTH,
+    ICheckMateTracker::Direction::NORTH_EAST,
+    ICheckMateTracker::Direction::EAST,
+    ICheckMateTracker::Direction::SOUTH_EAST,
+    ICheckMateTracker::Direction::SOUTH,
+    ICheckMateTracker::Direction::SOUTH_WEST,
+    ICheckMateTracker::Direction::WEST,
+    ICheckMateTracker::Direction::NORTH_WEST};
+
+CheckMateTracker::CheckMateTracker() {}
+
+void CheckMateTracker::onCheckMate(std::function<void()> callback) {
+  m_checkmate_callback = callback;
 }
 
 void CheckMateTracker::scanBoard(
@@ -33,10 +42,18 @@ void CheckMateTracker::scanBoard(
     }
   }
 
-  // Scan the board from the King position
+  // Directions to check against
+  std::vector<Direction> directions_to_check;
+  for (const auto direction : DIRECTIONS) {
+    if (excluded_directions.count(direction) == 0) {
+      directions_to_check.push_back(direction);
+    }
+  }
+
+  // Scan the board for threats to the King position
   std::set<Direction> movable_directions;
   for (int i = 0; i < 8; ++i) {
-    for (Direction direction : m_directions) {
+    for (Direction direction : directions_to_check) {
       auto is_check_and_movable = isCheckAndDirectionMovable(
           direction, king_pos, king_color, board_map);
 
@@ -46,14 +63,19 @@ void CheckMateTracker::scanBoard(
       }
 
       if (is_check_and_movable.second) {
-        // Direction can't be moved to
+        // Direction can be moved to
         movable_directions.insert(direction);
       }
     }
   }
 
-  if (movable_directions.empty()) {
+  if (king_in_check && movable_directions.empty()) {
     // Checkmate
+    m_checkmate_callback();
+  } else {
+    if (king_in_check) {
+      std::cout << "King is in Check!\n";
+    }
   }
 }
 
@@ -124,7 +146,7 @@ std::pair<bool, bool> CheckMateTracker::isCheckAndDirectionMovable(
   int king_col = PieceUtilities::getColNum(king_pos[0]);
   int king_row = std::atoi(&king_pos[1]);
 
-  while ((king_col >=0 && king_col < 8) && (king_row > 0 && king_row <= 8)) {
+  while (true) {
     switch (direction) {
     case Direction::NORTH:
       ++king_row;
@@ -156,6 +178,10 @@ std::pair<bool, bool> CheckMateTracker::isCheckAndDirectionMovable(
       break;
     }
 
+    if ((king_col <= 0 || king_col > 7) || (king_row < 1 || king_row > 8)) {
+        break; // Out of bounds
+    }
+
     std::string curr_pos =
         PieceUtilities::getColLetter(king_col) + std::to_string(king_row);
     if (board_map.at(curr_pos) != nullptr) {
@@ -165,8 +191,10 @@ std::pair<bool, bool> CheckMateTracker::isCheckAndDirectionMovable(
         bool attack_valid = false;
         auto attacks = board_map.at(curr_pos)->getAttackPatterns();
         for (const auto attack : attacks) {
-            const bool is_one_rank = isOneRankFromKing(direction, king_col, king_row, curr_pos);
-          if (PieceUtilities::canAttackPatternThreaten(direction, attack, is_one_rank)) {
+          const bool is_one_rank =
+              isOneRankFromKing(direction, king_col, king_row, curr_pos);
+          if (PieceUtilities::canAttackPatternThreaten(direction, attack,
+                                                       is_one_rank)) {
             attack_valid = true;
             break;
           }
@@ -241,28 +269,30 @@ bool CheckMateTracker::inBoundsCheck(Direction direction,
   return true;
 }
 
-bool CheckMateTracker::isOneRankFromKing(Direction king_direction, int king_col, int king_row, const std::string& piece_pos) {
-    int piece_col = PieceUtilities::getColNum(piece_pos[0]);
-    int piece_row = std::atoi(&piece_pos[1]);
+bool CheckMateTracker::isOneRankFromKing(Direction king_direction, int king_col,
+                                         int king_row,
+                                         const std::string &piece_pos) {
+  int piece_col = PieceUtilities::getColNum(piece_pos[0]);
+  int piece_row = std::atoi(&piece_pos[1]);
 
-    switch (king_direction) {
-        case Direction::NORTH:
-            return (piece_row - king_row == 1 && king_col == piece_col);
-        case Direction::NORTH_EAST:
-            return (piece_row - king_row == 1 && piece_col - king_col == 1);
-        case Direction::EAST:
-            return (piece_col - king_col == 1 && king_row == piece_row);
-        case Direction::SOUTH_EAST:
-            return (king_col - piece_col == 1 && king_row - piece_row == 1);
-        case Direction::SOUTH:
-            return (king_row - piece_row == 1 && king_col == piece_col);
-        case Direction::SOUTH_WEST:
-            return (king_row - piece_row == 1 && king_col - piece_col == 1);
-        case Direction::WEST:
-            return (king_col - piece_col == 1 && king_row == piece_row);
-        case Direction::NORTH_WEST:
-            return (piece_row - king_row == 1 && king_col - piece_col == 1);
-        default:
-            return false;
-    }
+  switch (king_direction) {
+  case Direction::NORTH:
+    return (piece_row - king_row == 1 && king_col == piece_col);
+  case Direction::NORTH_EAST:
+    return (piece_row - king_row == 1 && piece_col - king_col == 1);
+  case Direction::EAST:
+    return (piece_col - king_col == 1 && king_row == piece_row);
+  case Direction::SOUTH_EAST:
+    return (king_col - piece_col == 1 && king_row - piece_row == 1);
+  case Direction::SOUTH:
+    return (king_row - piece_row == 1 && king_col == piece_col);
+  case Direction::SOUTH_WEST:
+    return (king_row - piece_row == 1 && king_col - piece_col == 1);
+  case Direction::WEST:
+    return (king_col - piece_col == 1 && king_row == piece_row);
+  case Direction::NORTH_WEST:
+    return (piece_row - king_row == 1 && king_col - piece_col == 1);
+  default:
+    return false;
+  }
 }

@@ -21,4 +21,6 @@ public:
   virtual void scanBoard(
       const IPiece::PieceColor king_color,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) = 0;
+
+  virtual void onCheckMate(std::function<void()> callback) = 0;
 };

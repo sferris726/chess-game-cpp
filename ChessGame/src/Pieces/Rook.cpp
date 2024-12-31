@@ -39,7 +39,7 @@ IPiece::MoveInfo Rook::getMoveInfo(
     }
   } else if (row == board_positions[1].second) {
     while (true) {
-      if (col < board_positions[1].second) {
+      if (col < board_positions[1].first) {
         ++col;
       } else {
         --col;

@@ -5,7 +5,9 @@
 static const int PAWNS = 8;
 static const std::regex PIECE_PATTERN("^[rnbqRNBQ]$");
 
-Board::Board(PieceFactory &piece_factory) : m_piece_factory{piece_factory} {
+Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker)
+    : m_piece_factory{piece_factory}, m_checkmate_tracker{checkmate_tracker} {
+  m_checkmate_tracker.onCheckMate([this]() { m_game_over_callback(); });
   generateBoard();
 }
 
@@ -90,6 +92,10 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   }
 
   m_board_map[from_pos] = nullptr;
+  m_checkmate_tracker.scanBoard(piece_color == IPiece::PieceColor::WHITE
+                                    ? IPiece::PieceColor::BLACK
+                                    : IPiece::PieceColor::WHITE,
+                                m_board_map);
   return true;
 }
 
