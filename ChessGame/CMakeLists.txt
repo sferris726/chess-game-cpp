@@ -11,6 +11,7 @@ set(CMAKE_BINARY_DIR "${CMAKE_SOURCE_DIR}/build")
 add_subdirectory(src/Game)
 add_subdirectory(src/Board)
 add_subdirectory(src/Pieces)
+add_subdirectory(src/Utilities)
 
 # Add source files
 add_executable(ChessGame src/main.cpp)

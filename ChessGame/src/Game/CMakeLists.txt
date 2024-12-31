@@ -7,8 +7,10 @@ add_library(Game ${GAME_SOURCES})
 # Specify the include directory for this library (Game)
 target_include_directories(
   Game
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/interfaces
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+         ${CMAKE_CURRENT_SOURCE_DIR}/interfaces
          ${CMAKE_CURRENT_SOURCE_DIR}/../Board
-         ${CMAKE_CURRENT_SOURCE_DIR}/../Pieces)
+         ${CMAKE_CURRENT_SOURCE_DIR}/../Pieces
+         ${CMAKE_CURRENT_SOURCE_DIR}/../Utilities)
 
-target_link_libraries(Game PRIVATE Board Pieces)
+target_link_libraries(Game PRIVATE Board Pieces Utilities)

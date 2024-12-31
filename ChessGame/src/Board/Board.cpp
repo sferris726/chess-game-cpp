@@ -88,7 +88,7 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   } else {
     m_board_map[to_pos] = std::move(m_board_map[from_pos]);
   }
-  
+
   m_board_map[from_pos] = nullptr;
   return true;
 }
@@ -158,10 +158,9 @@ void Board::generatePawnRow(
 
 void Board::handlePawnPromotion(const std::string &pos,
                                 const IPiece::PieceColor piece_color) {
-  std::string promotion_piece;
-  std::cout << "Pawn promotion avaiable, enter the piece you would like to "
-               "promote to: ";
-  std::cin >> promotion_piece;
+  std::string promotion_piece = InputHandler::getInput(
+      "Pawn promotion avaiable, enter the piece you would like to promote to:");
+      
   if (promotion_piece.length() == 1 &&
       std::regex_match(promotion_piece, PIECE_PATTERN)) {
     std::transform(promotion_piece.begin(), promotion_piece.end(),

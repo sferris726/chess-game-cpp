@@ -8,6 +8,7 @@ add_library(Board ${BOARD_SOURCES})
 target_include_directories(
   Board
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/interfaces
-         ${CMAKE_CURRENT_SOURCE_DIR}/../Pieces)
+         ${CMAKE_CURRENT_SOURCE_DIR}/../Pieces
+         ${CMAKE_CURRENT_SOURCE_DIR}/../Utilities)
 
-target_link_libraries(Board PRIVATE Pieces)
+target_link_libraries(Board PRIVATE Pieces Utilities)

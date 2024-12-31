@@ -1,4 +1,5 @@
 #include "IGame.h"
+#include "InputHandler.h"
 #include "interfaces/IBoard.h"
 #include "interfaces/IPiece.h"
 #include "interfaces/IPieceManager.h"
@@ -15,6 +16,8 @@ public:
   void start() override;
 
 private:
+  bool validInput(const std::string &s1, const std::string &s2);
+
   IBoard &m_board;
   IPieceManager &m_piece_manager;
   bool m_is_game_over;

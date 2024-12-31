@@ -1,4 +1,5 @@
 #include "IBoard.h"
+#include "InputHandler.h"
 #include "PieceFactory.h"
 #include "PieceUtilities.h"
 #include "interfaces/IPieceManager.h"

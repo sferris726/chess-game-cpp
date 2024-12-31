@@ -20,40 +20,33 @@ void Game::start() {
 
     m_invalid_input = false; // Reset on every loop
     std::string input;
+    std::string prompt;
     std::string from_pos;
     std::string to_pos;
     IPiece::PieceColor color_move;
 
     if (m_turn_count % 2 == 0) {
       color_move = IPiece::PieceColor::WHITE;
-      std::cout << "White turn, please enter move: ";
+      prompt = "White turn, please enter move: ";
     } else {
       color_move = IPiece::PieceColor::BLACK;
-      std::cout << "Black turn, please enter move: ";
+      prompt = "Black turn, please enter move: ";
     }
 
-    std::getline(std::cin, input);
-    std::stringstream ss(input);
-    if (ss >> from_pos >> to_pos) {
-      if (ss.eof()) {
-        if (!std::regex_match(from_pos, PATTERN) ||
-            !std::regex_match(to_pos, PATTERN)) {
-          m_invalid_input = true;
-          std::cout << "Invalid input, please try again" << std::endl;
-          continue;
-        }
+    input = InputHandler::getInput(prompt);
+    if (InputHandler::parseStr(input, from_pos, to_pos)) {
+      if (!validInput(from_pos, to_pos)) {
+        m_invalid_input = true;
+        std::cout << "Invalid input, please try again" << std::endl;
+        continue;
+      }
 
-        const bool success = m_board.movePiece(color_move, from_pos, to_pos);
-        if (success) {
-          m_turn_count++;
-        } else {
-          m_invalid_input = true;
-          std::cout << "Invalid move, please try again" << std::endl;
-        }
+      const bool success = m_board.movePiece(color_move, from_pos, to_pos);
+      if (success) {
+        m_turn_count++;
       } else {
         m_invalid_input = true;
-        std::cout << "Please enter exactly 2 inputs (start, end). Ex. a2 a4"
-                  << std::endl;
+        std::cout << "Invalid move, please try again" << std::endl;
       }
     } else {
       m_invalid_input = true;
@@ -65,4 +58,9 @@ void Game::start() {
       break;
     }
   }
+}
+
+bool Game::validInput(const std::string &s1, const std::string &s2) {
+  return s1.size() == 2 && s2.size() == 2 && std::regex_match(s1, PATTERN) &&
+         std::regex_match(s2, PATTERN);
 }
