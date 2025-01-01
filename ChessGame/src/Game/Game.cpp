@@ -5,8 +5,8 @@ static const std::regex CASTLE_PATTERN(R"(^castle$)",
                                        std::regex_constants::icase);
 
 Game::Game(IBoard &board)
-    : m_board{board}, m_is_game_over{false},
-      m_turn_count{0}, m_invalid_input{false} {
+    : m_board{board}, m_is_game_over{false}, m_turn_count{0}, m_invalid_input{
+                                                                  false} {
   m_board.onGameOver([this]() { m_is_game_over = true; });
 }
 

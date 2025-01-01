@@ -59,20 +59,18 @@ void CheckMateTracker::scanBoard(
 
   // Scan the board for threats to the King position
   std::set<Direction> movable_directions;
-  for (int i = 0; i < 8; ++i) {
-    for (Direction direction : directions_to_check) {
-      auto is_check_and_movable = isCheckAndDirectionMovable(
-          direction, king_pos, king_color, board_map);
+  for (Direction direction : directions_to_check) {
+    auto is_check_and_movable =
+        isCheckAndDirectionMovable(direction, king_pos, king_color, board_map);
 
-      // Make sure King isn't already deemed to be in check
-      if (!king_in_check) {
-        king_in_check = is_check_and_movable.first;
-      }
+    // Make sure King isn't already deemed to be in check
+    if (!king_in_check) {
+      king_in_check = is_check_and_movable.first;
+    }
 
-      if (is_check_and_movable.second) {
-        // Direction can be moved to
-        movable_directions.insert(direction);
-      }
+    if (is_check_and_movable.second) {
+      // Direction can be moved to
+      movable_directions.insert(direction);
     }
   }
 
