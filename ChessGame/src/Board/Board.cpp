@@ -78,8 +78,6 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
     m_board_map[opp_pos] = nullptr;
   }
 
-  // TODO: Castling
-
   if (m_board_map.at(to_pos) != nullptr) {
     if (m_board_map.at(to_pos)->getSymbol() == 'K') {
       // King was captured, game over

@@ -58,6 +58,7 @@ IPiece::MoveInfo King::getMoveInfo(
 
   m_last_move.first = from_pos;
   m_last_move.second = to_pos;
+  move_info.is_valid = true;
   return move_info;
 }
 
