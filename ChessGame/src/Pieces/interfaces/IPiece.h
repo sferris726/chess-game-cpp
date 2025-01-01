@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -41,6 +42,6 @@ public:
   virtual PieceColor getColor() const = 0;
   virtual std::string getColorStr() const = 0;
   virtual std::pair<std::string, std::string> getLastMove() const = 0;
-  virtual std::vector<AttackPattern> getAttackPatterns() const = 0;
+  virtual std::set<AttackPattern> getAttackPatterns() const = 0;
   virtual ~IPiece(){};
 };

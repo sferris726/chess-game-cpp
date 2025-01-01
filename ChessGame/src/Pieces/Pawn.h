@@ -21,7 +21,7 @@ public:
 
   std::pair<std::string, std::string> getLastMove() const override;
 
-  std::vector<AttackPattern> getAttackPatterns() const override;
+  std::set<AttackPattern> getAttackPatterns() const override;
 
 private:
   /**

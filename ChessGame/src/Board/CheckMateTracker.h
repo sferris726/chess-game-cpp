@@ -29,6 +29,12 @@ public:
   void onCheckMate(std::function<void()> callback) override;
 
 private:
+  struct ThreatInfo {
+    bool has_check;
+    bool direction_movable_for_king;
+    std::string threat_pos;
+  };
+
   /**
    * @brief Check L Shape attack threats
    *
@@ -49,17 +55,44 @@ private:
    * @param king_pos The current position of the King
    * @param king_color The piece color
    * @param board_map The board
-   * @returns Pair of [is_check, is_direction_movable]
+   * @returns ThreatInfo
    */
-  std::pair<bool, bool> isCheckAndDirectionMovable(
+  ThreatInfo getThreatInfo(
       Direction direction, const std::string &king_pos,
       const IPiece::PieceColor king_color,
+      const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
+
+  /**
+   * @brief King is in check and cannot move, scan if there are pieces that can
+   * move to protect the king
+   *
+   * @param color
+   * @param king_pos
+   * @param direction
+   * @param board_map
+   * @returns If the King can be protected or not
+   */
+  bool scanForProtections(
+      const IPiece::PieceColor color, const std::string &king_pos,
+      const std::string &threat_pos, const Direction direction,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
 
   bool inBoundsCheck(Direction direction, const std::string &pos);
 
   bool isOneRankFromKing(Direction direction, int king_col, int king_row,
                          const std::string &piece_pos);
+
+  std::vector<std::string> getOpposingPiecesInDirection(
+      const Direction direction, const IPiece::PieceColor color, int start_col,
+      int start_row,
+      const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
+
+  bool canKingBeProtected(
+      const IPiece::PieceColor ally_color, const std::string &king_pos,
+      const std::string &threat_pos,
+      const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
+
+  void moveDirection(Direction direction, int &col, int &row);
 
   std::function<void(const IPiece::PieceColor color, const bool in_check)>
       m_king_in_check_callback;

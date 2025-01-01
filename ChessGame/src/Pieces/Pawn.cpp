@@ -120,9 +120,9 @@ std::pair<std::string, std::string> Pawn::getLastMove() const {
   return m_last_move;
 }
 
-std::vector<IPiece::AttackPattern> Pawn::getAttackPatterns() const {
-  std::vector<AttackPattern> ret;
-  ret.push_back(AttackPattern::DIAGONAL_ONE);
+std::set<IPiece::AttackPattern> Pawn::getAttackPatterns() const {
+  std::set<AttackPattern> ret;
+  ret.insert(AttackPattern::DIAGONAL_ONE);
   return ret;
 }
 

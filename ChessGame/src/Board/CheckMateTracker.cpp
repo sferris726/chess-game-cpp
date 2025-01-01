@@ -39,44 +39,64 @@ void CheckMateTracker::scanBoard(
 
   // Check if the Knights can threaten, need special handling for L-Shape
   // pattern attack
-  std::set<Direction> excluded_directions;
+  std::vector<std::pair<std::string, std::set<Direction>>> threats;
   for (const auto &[pos, piece] : board_map) {
     if (piece && piece->getSymbol() == 'N' && piece->getColor() != king_color) {
       auto l_threat = checkLPatternThreat(king_pos, pos);
       king_in_check = l_threat.first;
-      excluded_directions.insert(l_threat.second.begin(),
-                                 l_threat.second.end());
+      threats.push_back(std::pair(pos, l_threat.second));
     }
   }
 
   // Directions to check against
-  std::vector<Direction> directions_to_check;
-  for (const auto direction : DIRECTIONS) {
-    if (excluded_directions.count(direction) == 0) {
-      directions_to_check.push_back(direction);
-    }
-  }
+  // std::vector<Direction> directions_to_check;
+  // for (const auto direction : DIRECTIONS) {
+  //   if (threatened_directions.count(direction) == 0) {
+  //     directions_to_check.push_back(direction);
+  //   }
+  // }
 
   // Scan the board for threats to the King position
   std::set<Direction> movable_directions;
-  for (Direction direction : directions_to_check) {
-    auto is_check_and_movable =
-        isCheckAndDirectionMovable(direction, king_pos, king_color, board_map);
+  for (Direction direction : DIRECTIONS) {
+    auto threat_info =
+        getThreatInfo(direction, king_pos, king_color, board_map);
 
-    // Make sure King isn't already deemed to be in check
-    if (!king_in_check) {
-      king_in_check = is_check_and_movable.first;
+    if (threat_info.has_check) {
+      threats.push_back(
+          std::pair(threat_info.threat_pos, std::set<Direction>{direction}));
+      // Make sure King isn't already deemed to be in check
+      king_in_check = !king_in_check ? threat_info.has_check : king_in_check;
     }
 
-    if (is_check_and_movable.second) {
+    if (threat_info.direction_movable_for_king) {
       // Direction can be moved to
       movable_directions.insert(direction);
     }
   }
 
   if (king_in_check && movable_directions.empty()) {
-    // Checkmate
-    m_checkmate_callback();
+    // No movable directions, scan board for pieces that can protect the king
+    bool is_checkmate = true;
+    for (const auto &threat : threats) {
+      bool can_protect = false;
+      for (const auto direction : threat.second) {
+        if (scanForProtections(king_color, king_pos, threat.first, direction,
+                               board_map)) {
+          can_protect = true;
+          break;
+        }
+      }
+
+      if (can_protect) {
+        is_checkmate = false;
+        break;
+      }
+    }
+
+    if (is_checkmate) {
+      m_checkmate_callback();
+    }
   } else {
     if (king_in_check) {
       std::cout << "King is in Check!\n";
@@ -115,9 +135,9 @@ bool CheckMateTracker::castlingScan(
   // Check if King is threatened by other pieces
   for (const Direction direction : DIRECTIONS) {
     const bool pos1_in_check =
-        isCheckAndDirectionMovable(direction, pos1, color, board_map).first;
+        getThreatInfo(direction, pos1, color, board_map).has_check;
     const bool pos2_in_check =
-        isCheckAndDirectionMovable(direction, pos2, color, board_map).first;
+        getThreatInfo(direction, pos2, color, board_map).has_check;
 
     if (pos1_in_check || pos2_in_check) {
       return false;
@@ -180,51 +200,22 @@ CheckMateTracker::checkLPatternThreat(const std::string &king_pos,
   return std::pair(in_check, directions_to_exclude);
 }
 
-std::pair<bool, bool> CheckMateTracker::isCheckAndDirectionMovable(
+CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
     Direction direction, const std::string &king_pos,
     const IPiece::PieceColor king_color,
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   // Bounds check
   if (!inBoundsCheck(direction, king_pos)) {
-    return std::pair(false, false);
+    return ThreatInfo{};
   }
 
-  bool in_check = false;
-  bool direction_movable = true;
+  ThreatInfo threat_info;
+  threat_info.direction_movable_for_king = true;
   int king_col = PieceUtilities::getColNum(king_pos[0]);
   int king_row = std::atoi(&king_pos[1]);
 
   while (true) {
-    switch (direction) {
-    case Direction::NORTH:
-      ++king_row;
-      break;
-    case Direction::NORTH_EAST:
-      ++king_col;
-      ++king_row;
-      break;
-    case Direction::EAST:
-      ++king_col;
-      break;
-    case Direction::SOUTH_EAST:
-      ++king_col;
-      --king_row;
-      break;
-    case Direction::SOUTH:
-      --king_row;
-      break;
-    case Direction::SOUTH_WEST:
-      --king_col;
-      --king_row;
-      break;
-    case Direction::WEST:
-      --king_col;
-      break;
-    case Direction::NORTH_WEST:
-      --king_col;
-      ++king_row;
-      break;
-    }
+    moveDirection(direction, king_col, king_row);
 
     if ((king_col <= 0 || king_col > 7) || (king_row < 1 || king_row > 8)) {
       break; // Out of bounds
@@ -247,26 +238,63 @@ std::pair<bool, bool> CheckMateTracker::isCheckAndDirectionMovable(
               isOneRankFromKing(direction, king_col, king_row, curr_pos);
           if (PieceUtilities::canAttackPatternThreaten(direction, attack,
                                                        is_one_rank)) {
+            threat_info.threat_pos = curr_pos;
             attack_valid = true;
             break;
           }
         }
 
         if (attack_valid) {
-          in_check = true;
-          direction_movable = false;
+          threat_info.has_check = true;
+          threat_info.direction_movable_for_king = false;
           break;
         }
       } else {
         // Found same color piece blocking direction from attack
-        in_check = false;
-        direction_movable = false;
+        threat_info.has_check = false;
+        threat_info.direction_movable_for_king = false;
         break;
       }
     }
   }
 
-  return std::pair(in_check, direction_movable);
+  return threat_info;
+}
+
+bool CheckMateTracker::scanForProtections(
+    const IPiece::PieceColor color, const std::string &king_pos,
+    const std::string &threat_pos, const Direction direction,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  int threat_col = PieceUtilities::getColNum(threat_pos[0]);
+  int threat_row = std::atoi(&threat_pos[1]);
+  std::vector<std::string> potential_protection_pieces;
+
+  // Scan for ally pieces that can potentially attack the attacking piece
+  for (const auto direction : DIRECTIONS) {
+    auto pieces = getOpposingPiecesInDirection(
+        direction,
+        color == IPiece::PieceColor::WHITE
+            ? IPiece::PieceColor::BLACK // Need the threat piece color
+            : IPiece::PieceColor::WHITE,
+        threat_col, threat_row, board_map);
+    potential_protection_pieces.insert(potential_protection_pieces.end(),
+                                       pieces.begin(), pieces.end());
+  }
+
+  // Can threat piece be attacked
+  for (const std::string &pos : potential_protection_pieces) {
+    if (PieceUtilities::canPieceBeAttacked(threat_pos, pos,
+                                           *board_map.at(pos))) {
+      return true; // Threat piece can be attacked
+    }
+  }
+
+  // Can a piece move to protect the King
+  if (canKingBeProtected(color, king_pos, threat_pos, board_map)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool CheckMateTracker::inBoundsCheck(Direction direction,
@@ -346,5 +374,85 @@ bool CheckMateTracker::isOneRankFromKing(Direction king_direction, int king_col,
     return (piece_row - king_row == 1 && king_col - piece_col == 1);
   default:
     return false;
+  }
+}
+
+std::vector<std::string> CheckMateTracker::getOpposingPiecesInDirection(
+    const Direction direction, const IPiece::PieceColor color, int col, int row,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  std::vector<std::string> ret;
+  bool found_same_color = false;
+
+  while (true) {
+    moveDirection(direction, col, row);
+
+    if ((col <= 0 || col > 7) || (row < 1 || row > 8)) {
+      break; // Out of bounds
+    }
+
+    std::string curr_pos =
+        PieceUtilities::getColLetter(col) + std::to_string(row);
+    if (board_map.at(curr_pos)) {
+      if (board_map.at(curr_pos)->getColor() == color) {
+        found_same_color = true;
+      } else {
+        if (found_same_color) {
+          if (board_map.at(curr_pos)->getSymbol() == 'N') {
+            // Knights can jump pieces
+            ret.push_back(curr_pos);
+          }
+        } else {
+          ret.push_back(curr_pos);
+        }
+      }
+    }
+  }
+
+  return ret;
+}
+
+bool CheckMateTracker::canKingBeProtected(
+    const IPiece::PieceColor ally_color, const std::string &king_pos,
+    const std::string &threat_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+    int king_col = PieceUtilities::getColNum(king_pos[0]);
+    int king_row = std::atoi(&king_pos[1]);
+    int threat_col = PieceUtilities::getColNum(threat_pos[0]);
+    int threat_row = std::atoi(&threat_pos[1]);
+    
+    
+    return false;
+}
+
+void CheckMateTracker::moveDirection(Direction direction, int &col, int &row) {
+  switch (direction) {
+  case Direction::NORTH:
+    ++row;
+    break;
+  case Direction::NORTH_EAST:
+    ++col;
+    ++row;
+    break;
+  case Direction::EAST:
+    ++col;
+    break;
+  case Direction::SOUTH_EAST:
+    ++col;
+    --row;
+    break;
+  case Direction::SOUTH:
+    --row;
+    break;
+  case Direction::SOUTH_WEST:
+    --col;
+    --row;
+    break;
+  case Direction::WEST:
+    --col;
+    break;
+  case Direction::NORTH_WEST:
+    --col;
+    ++row;
+    break;
   }
 }

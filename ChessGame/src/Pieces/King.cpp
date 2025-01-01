@@ -79,10 +79,10 @@ std::pair<std::string, std::string> King::getLastMove() const {
   return m_last_move;
 }
 
-std::vector<IPiece::AttackPattern> King::getAttackPatterns() const {
-  std::vector<AttackPattern> ret;
-  ret.push_back(AttackPattern::HORIZONTAL_ONE);
-  ret.push_back(AttackPattern::VERTICAL_ONE);
-  ret.push_back(AttackPattern::DIAGONAL_ONE);
+std::set<IPiece::AttackPattern> King::getAttackPatterns() const {
+  std::set<AttackPattern> ret;
+  ret.insert(AttackPattern::HORIZONTAL_ONE);
+  ret.insert(AttackPattern::VERTICAL_ONE);
+  ret.insert(AttackPattern::DIAGONAL_ONE);
   return ret;
 }

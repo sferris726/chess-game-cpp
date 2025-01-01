@@ -14,10 +14,6 @@ IPiece::MoveInfo Rook::getMoveInfo(
     return move_info;
   }
 
-  if (board_map.at(to_pos) && board_map.at(to_pos)->getColor() == getColor()) {
-    return move_info;
-  }
-
   int col = board_positions[0].first;
   int row = board_positions[0].second;
 
@@ -30,7 +26,8 @@ IPiece::MoveInfo Rook::getMoveInfo(
       }
 
       std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
-      if (board_map.at(pos) != nullptr) {
+      if (board_map.at(pos) != nullptr &&
+          board_map.at(to_pos)->getColor() == getColor()) {
         return move_info;
       }
 
@@ -47,7 +44,8 @@ IPiece::MoveInfo Rook::getMoveInfo(
       }
 
       std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
-      if (board_map.at(pos) != nullptr) {
+      if (board_map.at(pos) != nullptr &&
+          board_map.at(to_pos)->getColor() == getColor()) {
         return move_info;
       }
 
@@ -82,9 +80,9 @@ std::pair<std::string, std::string> Rook::getLastMove() const {
   return m_last_move;
 }
 
-std::vector<IPiece::AttackPattern> Rook::getAttackPatterns() const {
-  std::vector<AttackPattern> ret;
-  ret.push_back(AttackPattern::HORIZONTAL_ALL);
-  ret.push_back(AttackPattern::VERTICAL_ALL);
+std::set<IPiece::AttackPattern> Rook::getAttackPatterns() const {
+  std::set<AttackPattern> ret;
+  ret.insert(AttackPattern::HORIZONTAL_ALL);
+  ret.insert(AttackPattern::VERTICAL_ALL);
   return ret;
 }

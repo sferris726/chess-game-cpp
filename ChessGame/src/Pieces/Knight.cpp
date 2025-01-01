@@ -77,8 +77,8 @@ std::pair<std::string, std::string> Knight::getLastMove() const {
   return m_last_move;
 }
 
-std::vector<IPiece::AttackPattern> Knight::getAttackPatterns() const {
-  std::vector<AttackPattern> ret;
-  ret.push_back(AttackPattern::L_SHAPE);
+std::set<IPiece::AttackPattern> Knight::getAttackPatterns() const {
+  std::set<AttackPattern> ret;
+  ret.insert(AttackPattern::L_SHAPE);
   return ret;
 }

@@ -127,4 +127,52 @@ bool canAttackPatternThreaten(ICheckMateTracker::Direction direction,
     return false;
   }
 }
+
+bool canPieceBeAttacked(const std::string &piece_pos,
+                        const std::string &attack_pos,
+                        const IPiece &attack_piece) {
+  int piece_col = getColNum(piece_pos[0]);
+  int piece_row = std::atoi(&piece_pos[1]);
+  int attack_col = getColNum(attack_pos[0]);
+  int attack_row = std::atoi(&attack_pos[1]);
+  auto attack_patterns = attack_piece.getAttackPatterns();
+  int distance;
+
+  if (piece_col == attack_col) {
+    distance = std::abs(piece_col = attack_col);
+    if (attack_patterns.count(IPiece::AttackPattern::VERTICAL_ALL) > 0 ||
+        (distance == 1 &&
+         attack_patterns.count(IPiece::AttackPattern::VERTICAL_ONE) > 0)) {
+      return true;
+    }
+  }
+
+  if (piece_row == attack_row) {
+    distance = std::abs(piece_row = attack_row);
+    if (attack_patterns.count(IPiece::AttackPattern::HORIZONTAL_ALL) > 0 ||
+        (distance == 1 &&
+         attack_patterns.count(IPiece::AttackPattern::HORIZONTAL_ONE) > 0)) {
+      return true;
+    }
+  }
+
+  int col_diff = std::abs(piece_col - attack_col);
+  int row_diff = std::abs(piece_row - attack_row);
+
+  if (col_diff == row_diff) {
+    if (attack_patterns.count(IPiece::AttackPattern::DIAGONAL_ALL) > 0 ||
+        (col_diff == 1 && row_diff == 1 &&
+         attack_patterns.count(IPiece::AttackPattern::DIAGONAL_ONE))) {
+      return true;
+    }
+  }
+
+  if ((col_diff == 2 && row_diff == 1) || (row_diff == 2 && col_diff == 1)) {
+    if (attack_patterns.count(IPiece::AttackPattern::L_SHAPE) > 0) {
+      return true;
+    }
+  }
+
+  return false;
+}
 } // namespace PieceUtilities
