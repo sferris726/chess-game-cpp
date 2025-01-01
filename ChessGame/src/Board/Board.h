@@ -3,7 +3,6 @@
 #include "PieceFactory.h"
 #include "PieceUtilities.h"
 #include "interfaces/ICheckMateTracker.h"
-#include "interfaces/IPieceManager.h"
 #include <algorithm>
 #include <cctype>
 #include <map>
