@@ -109,8 +109,6 @@ bool CheckMateTracker::castlingScan(
       if (checkLPatternThreat(pos1, pos).first ||
           checkLPatternThreat(pos2, pos).first) {
         // King is in check
-        std::cout << "Castling invalid, move would put King in check or moved "
-                     "through check\n";
         return false;
       }
     }
@@ -124,8 +122,6 @@ bool CheckMateTracker::castlingScan(
         isCheckAndDirectionMovable(direction, pos2, color, board_map).first;
 
     if (pos1_in_check || pos2_in_check) {
-      std::cout << "Castling invalid, move would put King in check or moved "
-                   "through check\n";
       return false;
     }
   }

@@ -1,6 +1,8 @@
 #include "Game.h"
 
-static const std::regex PATTERN("^[a-h1-8]+$");
+static const std::regex PATTERN(R"(^[a-h][1-8]$)");
+static const std::regex CASTLE_PATTERN(R"(^castle$)",
+                                       std::regex_constants::icase);
 
 Game::Game(IBoard &board, IPieceManager &piece_manager)
     : m_board{board}, m_piece_manager{piece_manager}, m_is_game_over{false},
@@ -21,8 +23,8 @@ void Game::start() {
     m_invalid_input = false; // Reset on every loop
     std::string input;
     std::string prompt;
-    std::string from_pos;
-    std::string to_pos;
+    std::string str1;
+    std::string str2;
     IPiece::PieceColor color_move;
 
     if (m_turn_count % 2 == 0) {
@@ -34,19 +36,32 @@ void Game::start() {
     }
 
     input = InputHandler::getInput(prompt);
-    if (InputHandler::parseStr(input, from_pos, to_pos)) {
-      if (!validInput(from_pos, to_pos)) {
+    if (InputHandler::parseStr(input, str1, str2)) {
+      if (!validInput(str1, str2)) {
         m_invalid_input = true;
         std::cout << "Invalid input, please try again" << std::endl;
         continue;
       }
 
-      const bool success = m_board.movePiece(color_move, from_pos, to_pos);
-      if (success) {
-        m_turn_count++;
+      std::transform(str1.begin(), str1.end(), str1.begin(), ::tolower);
+      if (str1 == "castle") {
+        const bool castling_success = m_board.tryCastling(color_move, str2);
+        if (castling_success) {
+          ++m_turn_count;
+        } else {
+          m_invalid_input = true;
+          std::cout << "Castling invalid:\n- Valid command example: castle "
+                       "a4\n- Ensure King is not in check or moving through or "
+                       "to check\n- Ensure King and rook have not moved\n";
+        }
       } else {
-        m_invalid_input = true;
-        std::cout << "Invalid move, please try again" << std::endl;
+        const bool success = m_board.movePiece(color_move, str1, str2);
+        if (success) {
+          m_turn_count++;
+        } else {
+          m_invalid_input = true;
+          std::cout << "Invalid move, please try again" << std::endl;
+        }
       }
     } else {
       m_invalid_input = true;
@@ -62,6 +77,8 @@ void Game::start() {
 }
 
 bool Game::validInput(const std::string &s1, const std::string &s2) {
-  return s1.size() == 2 && s2.size() == 2 && std::regex_match(s1, PATTERN) &&
+  return (s1.size() == 2 || s1.size() == 6) && s2.size() == 2 &&
+         (std::regex_match(s1, PATTERN) ||
+          std::regex_match(s1, CASTLE_PATTERN)) &&
          std::regex_match(s2, PATTERN);
 }
