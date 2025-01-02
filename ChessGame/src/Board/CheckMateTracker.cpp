@@ -40,17 +40,12 @@ void CheckMateTracker::scanBoard(
     if (piece && piece->getSymbol() == 'N' && piece->getColor() != king_color) {
       auto l_threat = checkLPatternThreat(king_pos, pos);
       king_in_check = l_threat.first;
-      threats.push_back(std::pair(pos, l_threat.second));
+
+      if (king_in_check) {
+        threats.push_back(std::pair(pos, l_threat.second));
+      }
     }
   }
-
-  // Directions to check against
-  // std::vector<Direction> directions_to_check;
-  // for (const auto direction : DIRECTIONS) {
-  //   if (threatened_directions.count(direction) == 0) {
-  //     directions_to_check.push_back(direction);
-  //   }
-  // }
 
   // Scan the board for threats to the King position
   std::set<Direction> movable_directions;
@@ -61,8 +56,7 @@ void CheckMateTracker::scanBoard(
     if (threat_info.has_check) {
       threats.push_back(
           std::pair(threat_info.threat_pos, std::set<Direction>{direction}));
-      // Make sure King isn't already deemed to be in check
-      king_in_check = !king_in_check ? threat_info.has_check : king_in_check;
+      king_in_check = true;
     }
 
     if (threat_info.direction_movable_for_king) {
@@ -73,25 +67,41 @@ void CheckMateTracker::scanBoard(
 
   if (king_in_check && movable_directions.empty()) {
     bool is_checkmate = true;
-
-    if (has_next_move) {
-      // No movable directions, scan board for pieces that can protect the king
-      for (const auto &threat : threats) {
-        bool can_protect = false;
-        for (const auto direction : threat.second) {
-          if (scanForProtections(king_color, king_pos, threat.first, direction,
-                                 board_map)) {
-            can_protect = true;
-            break;
-          }
-        }
-
-        if (can_protect) {
-          is_checkmate = false;
+    for (const auto &threat : threats) {
+      bool can_protect = false;
+      for (const auto direction : threat.second) {
+        if (scanForProtections(king_color, king_pos, threat.first, direction,
+                               board_map)) {
+          can_protect = true;
           break;
         }
       }
+
+      if (can_protect) {
+        is_checkmate = false;
+        break;
+      }
     }
+
+    // if (has_next_move) {
+    //   // No movable directions, scan board for pieces that can protect the
+    //   king for (const auto &threat : threats) {
+    //     bool can_protect = false;
+    //     for (const auto direction : threat.second) {
+    //       if (scanForProtections(king_color, king_pos, threat.first,
+    //       direction,
+    //                              board_map)) {
+    //         can_protect = true;
+    //         break;
+    //       }
+    //     }
+
+    //     if (can_protect) {
+    //       is_checkmate = false;
+    //       break;
+    //     }
+    //   }
+    // }
 
     if (is_checkmate) {
       m_checkmate_callback();
@@ -137,7 +147,7 @@ std::pair<bool, std::set<IPiece::Direction>>
 CheckMateTracker::checkLPatternThreat(const std::string &king_pos,
                                       const std::string &knight_pos) {
   bool in_check = false;
-  std::set<Direction> directions_to_exclude;
+  std::set<Direction> threat_directions;
 
   int king_col = PieceUtilities::getColNum(king_pos[0]);
   int king_row = std::atoi(&king_pos[1]);
@@ -153,16 +163,16 @@ CheckMateTracker::checkLPatternThreat(const std::string &king_pos,
     if (king_col - knight_col < 0) {
       // King is to the left of the knight
       if (col_diff == 2) {
-        directions_to_exclude.insert(Direction::NORTH_EAST);
+        threat_directions.insert(Direction::NORTH_EAST);
       } else {
-        directions_to_exclude.insert(Direction::SOUTH_WEST);
+        threat_directions.insert(Direction::SOUTH_WEST);
       }
     } else {
       // King is to the right of the knight
       if (col_diff == 2) {
-        directions_to_exclude.insert(Direction::NORTH_WEST);
+        threat_directions.insert(Direction::NORTH_WEST);
       } else {
-        directions_to_exclude.insert(Direction::SOUTH_EAST);
+        threat_directions.insert(Direction::SOUTH_EAST);
       }
     }
   } else if ((col_diff == 3 && row_diff == 1) ||
@@ -170,20 +180,20 @@ CheckMateTracker::checkLPatternThreat(const std::string &king_pos,
     // Knight can have King in check if King moves in a certain direction
     if (col_diff == 3) {
       if (king_col - knight_col < 0) { // King is to left of knight
-        directions_to_exclude.insert(Direction::EAST);
+        threat_directions.insert(Direction::EAST);
       } else { // King is to right of knight
-        directions_to_exclude.insert(Direction::WEST);
+        threat_directions.insert(Direction::WEST);
       }
     } else {
       if (king_row - knight_row < 0) { // King is to left of knight
-        directions_to_exclude.insert(Direction::EAST);
+        threat_directions.insert(Direction::EAST);
       } else { // King is to right of knight
-        directions_to_exclude.insert(Direction::WEST);
+        threat_directions.insert(Direction::WEST);
       }
     }
   }
 
-  return std::pair(in_check, directions_to_exclude);
+  return std::pair(in_check, threat_directions);
 }
 
 CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
@@ -195,7 +205,7 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
     return ThreatInfo{};
   }
 
-  ThreatInfo threat_info;
+  ThreatInfo threat_info = ThreatInfo{};
   threat_info.direction_movable_for_king = true;
   int king_col = PieceUtilities::getColNum(king_pos[0]);
   int king_row = std::atoi(&king_pos[1]);
@@ -368,6 +378,7 @@ std::vector<std::string> CheckMateTracker::getOpposingPiecesInDirection(
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   std::vector<std::string> ret;
   bool found_same_color = false;
+  bool found_first_opposing_piece = false;
 
   while (true) {
     moveDirection(direction, col, row);
@@ -382,13 +393,26 @@ std::vector<std::string> CheckMateTracker::getOpposingPiecesInDirection(
       if (board_map.at(curr_pos)->getColor() == color) {
         found_same_color = true;
       } else {
-        if (found_same_color) {
-          if (board_map.at(curr_pos)->getSymbol() == 'N') {
-            // Knights can jump pieces
+        // Found the first opposing piece in this direction, can ignore the
+        // other opposing pieces except for knight since they cannot jump
+        if (!found_first_opposing_piece) {
+          found_first_opposing_piece = true;
+
+          if (!found_same_color) {
             ret.push_back(curr_pos);
+          } else {
+            if (board_map.at(curr_pos)->getSymbol() == 'N') {
+              // Knights can jump pieces
+              ret.push_back(curr_pos);
+            }
           }
         } else {
-          ret.push_back(curr_pos);
+          if (found_same_color) {
+            if (board_map.at(curr_pos)->getSymbol() == 'N') {
+              // Knights can jump pieces
+              ret.push_back(curr_pos);
+            }
+          }
         }
       }
     }
@@ -405,19 +429,21 @@ bool CheckMateTracker::canKingBeProtected(
   int king_row = std::atoi(&king_pos[1]);
   int threat_col = PieceUtilities::getColNum(threat_pos[0]);
   int threat_row = std::atoi(&threat_pos[1]);
-  std::vector<std::pair<int, int>> bounds;
 
+  // Get the bounds between King and threat
+  std::vector<std::pair<int, int>> bounds;
   while (true) {
     moveDirection(threat_direction, king_col, king_row);
 
     if ((king_col == threat_col && king_row == threat_row) ||
-        ((king_col <= 0 || king_col > 7) || (king_row < 1 || king_row > 8))) {
+        ((king_col < 0 || king_col > 7) || (king_row < 1 || king_row > 8))) {
       break; // Out of bounds
     } else {
       bounds.push_back(std::pair(king_col, king_row));
     }
   }
 
+  // Gather ally pieces and check if Knight ally can move to protect
   std::vector<std::string> ally_pieces;
   for (const auto &[pos, piece] : board_map) {
     if (piece && piece->getColor() == ally_color) {
@@ -508,21 +534,21 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
         if (symbol == 'Q' || symbol == 'B' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == 1 && row_diff == -1)) {
-          moveDirection(Direction::NORTH_EAST, tmp_col, tmp_row);
+          moveDirection(Direction::SOUTH_EAST, tmp_col, tmp_row);
         }
       } else if (col_diff < 0 && row_diff < 0) {
         // moving southwest
         if (symbol == 'Q' || symbol == 'B' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == -1 && row_diff == -1)) {
-          moveDirection(Direction::NORTH_EAST, tmp_col, tmp_row);
+          moveDirection(Direction::SOUTH_WEST, tmp_col, tmp_row);
         }
       } else if (col_diff < 0 && row_diff > 0) {
         // moving northwest
         if (symbol == 'Q' || symbol == 'B' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE &&
              col_diff == -1 && row_diff == 1)) {
-          moveDirection(Direction::NORTH_EAST, tmp_col, tmp_row);
+          moveDirection(Direction::NORTH_WEST, tmp_col, tmp_row);
         }
       }
 

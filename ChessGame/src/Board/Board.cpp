@@ -99,8 +99,9 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   } else {
     m_board_map[to_pos] = std::move(m_board_map[from_pos]);
   }
-
   m_board_map[from_pos] = nullptr;
+
+  // Check and Checmate tracking
   m_checkmate_tracker.scanBoard(IPiece::PieceColor::WHITE,
                                 piece_color != IPiece::PieceColor::WHITE,
                                 m_board_map);

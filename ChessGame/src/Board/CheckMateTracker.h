@@ -11,10 +11,6 @@ public:
 
   CheckMateTracker();
 
-  // first for loop is to find the king pos
-  // Do a nested for loop -> outer loop is 0-8. Inner loop go clockwise to check
-  // every direction (N, NE, E, SE, S, SW, W, NW) call this function for the
-  // opposite color that just moved
   void scanBoard(
       const IPiece::PieceColor king_color, const bool has_next_move,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
