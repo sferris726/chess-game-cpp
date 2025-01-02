@@ -23,7 +23,7 @@ int getColNum(const char col);
 
 IPiece::PieceType convertStrToPieceType(const std::string &str);
 
-bool canAttackPatternThreaten(ICheckMateTracker::Direction direction,
+bool canAttackPatternThreaten(IPiece::Direction direction,
                               IPiece::AttackPattern attack,
                               bool is_one_rank_from);
 

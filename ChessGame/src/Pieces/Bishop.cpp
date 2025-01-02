@@ -69,6 +69,14 @@ std::pair<std::string, std::string> Bishop::getLastMove() const {
   return m_last_move;
 }
 
+bool Bishop::canMoveInDirection(Direction direction,
+                                const std::string &target) const {
+  return direction == Direction::NORTH_EAST ||
+         direction == Direction::NORTH_WEST ||
+         direction == Direction::SOUTH_EAST ||
+         direction == Direction::SOUTH_WEST;
+}
+
 std::set<IPiece::AttackPattern> Bishop::getAttackPatterns() const {
   std::set<AttackPattern> ret;
   ret.insert(AttackPattern::DIAGONAL_ALL);

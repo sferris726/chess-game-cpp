@@ -14,6 +14,16 @@ class IPiece {
 public:
   enum class PieceColor { WHITE, BLACK };
   enum class PieceType { NONE, PAWN, BISHOP, KNIGHT, ROOK, QUEEN, KING };
+  enum class Direction {
+    NORTH,
+    NORTH_EAST,
+    EAST,
+    SOUTH_EAST,
+    SOUTH,
+    SOUTH_WEST,
+    WEST,
+    NORTH_WEST
+  };
   enum class AttackPattern {
     VERTICAL_ALL,
     HORIZONTAL_ALL,
@@ -42,6 +52,8 @@ public:
   virtual PieceColor getColor() const = 0;
   virtual std::string getColorStr() const = 0;
   virtual std::pair<std::string, std::string> getLastMove() const = 0;
+  virtual bool canMoveInDirection(Direction direction,
+                                  const std::string &target) const = 0;
   virtual std::set<AttackPattern> getAttackPatterns() const = 0;
   virtual ~IPiece(){};
 };

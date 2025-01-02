@@ -101,9 +101,11 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   }
 
   m_board_map[from_pos] = nullptr;
-  m_checkmate_tracker.scanBoard(piece_color == IPiece::PieceColor::WHITE
-                                    ? IPiece::PieceColor::BLACK
-                                    : IPiece::PieceColor::WHITE,
+  m_checkmate_tracker.scanBoard(IPiece::PieceColor::WHITE,
+                                piece_color != IPiece::PieceColor::WHITE,
+                                m_board_map);
+  m_checkmate_tracker.scanBoard(IPiece::PieceColor::BLACK,
+                                piece_color != IPiece::PieceColor::BLACK,
                                 m_board_map);
   return true;
 }

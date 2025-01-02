@@ -7,6 +7,8 @@
 
 class CheckMateTracker : public ICheckMateTracker {
 public:
+  using Direction = IPiece::Direction;
+
   CheckMateTracker();
 
   // first for loop is to find the king pos
@@ -14,7 +16,7 @@ public:
   // every direction (N, NE, E, SE, S, SW, W, NW) call this function for the
   // opposite color that just moved
   void scanBoard(
-      const IPiece::PieceColor king_color,
+      const IPiece::PieceColor king_color, const bool has_next_move,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
   bool castlingScan(
@@ -89,10 +91,17 @@ private:
 
   bool canKingBeProtected(
       const IPiece::PieceColor ally_color, const std::string &king_pos,
-      const std::string &threat_pos,
+      const std::string &threat_pos, const Direction threat_direction,
+      const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
+
+  bool canPieceMoveIntoBounds(
+      const IPiece &piece, const std::string &piece_pos,
+      const std::vector<std::pair<int, int>> bounds,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
 
   void moveDirection(Direction direction, int &col, int &row);
+
+  void checkUpdate(const bool king_in_check, const IPiece::PieceColor color);
 
   std::function<void(const IPiece::PieceColor color, const bool in_check)>
       m_king_in_check_callback;

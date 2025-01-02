@@ -73,6 +73,11 @@ std::string Knight::getColorStr() const {
   return PieceUtilities::convertPieceColorToStr(m_color);
 }
 
+bool Knight::canMoveInDirection(Direction direction,
+                                const std::string &target) const {
+  return false; // Not implemented for Knight
+}
+
 std::pair<std::string, std::string> Knight::getLastMove() const {
   return m_last_move;
 }

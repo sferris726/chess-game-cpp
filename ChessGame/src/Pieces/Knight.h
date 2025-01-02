@@ -21,6 +21,9 @@ public:
 
   std::pair<std::string, std::string> getLastMove() const override;
 
+  bool canMoveInDirection(Direction direction,
+                          const std::string &target = "-") const override;
+
   std::set<AttackPattern> getAttackPatterns() const override;
 
 private:

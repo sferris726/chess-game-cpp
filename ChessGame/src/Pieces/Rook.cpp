@@ -80,6 +80,12 @@ std::pair<std::string, std::string> Rook::getLastMove() const {
   return m_last_move;
 }
 
+bool Rook::canMoveInDirection(Direction direction,
+                              const std::string &target) const {
+  return direction == Direction::EAST || direction == Direction::WEST ||
+         direction == Direction::NORTH || direction == Direction::SOUTH;
+}
+
 std::set<IPiece::AttackPattern> Rook::getAttackPatterns() const {
   std::set<AttackPattern> ret;
   ret.insert(AttackPattern::HORIZONTAL_ALL);
