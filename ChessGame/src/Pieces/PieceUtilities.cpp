@@ -175,4 +175,25 @@ bool canPieceBeAttacked(const std::string &piece_pos,
 
   return false;
 }
+
+IPiece::Direction getOppositeDirection(IPiece::Direction direction) {
+  switch (direction) {
+  case IPiece::Direction::NORTH:
+    return IPiece::Direction::SOUTH;
+  case IPiece::Direction::NORTH_EAST:
+    return IPiece::Direction::SOUTH_WEST;
+  case IPiece::Direction::EAST:
+    return IPiece::Direction::WEST;
+  case IPiece::Direction::SOUTH_EAST:
+    return IPiece::Direction::NORTH_WEST;
+  case IPiece::Direction::SOUTH:
+    return IPiece::Direction::NORTH;
+  case IPiece::Direction::SOUTH_WEST:
+    return IPiece::Direction::NORTH_EAST;
+  case IPiece::Direction::WEST:
+    return IPiece::Direction::EAST;
+  case IPiece::Direction::NORTH_WEST:
+    return IPiece::Direction::SOUTH_EAST;
+  }
+}
 } // namespace PieceUtilities

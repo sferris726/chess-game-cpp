@@ -26,7 +26,7 @@ IPiece::MoveInfo King::getMoveInfo(
     int target_row = row < board_positions[1].second ? ++row : --row;
     std::string pos =
         PieceUtilities::getColLetter(col) + std::to_string(target_row);
-    if (board_map.at(pos) != nullptr) {
+    if (row != board_positions[1].second || board_map.at(pos) != nullptr) {
       return move_info;
     }
   } else if (row == board_positions[1].second) {
@@ -34,7 +34,7 @@ IPiece::MoveInfo King::getMoveInfo(
     int target_col = col < board_positions[1].first ? ++col : --col;
     std::string pos =
         PieceUtilities::getColLetter(target_col) + std::to_string(row);
-    if (board_map.at(pos) != nullptr) {
+    if (col != board_positions[1].first || board_map.at(pos) != nullptr) {
       return move_info;
     }
   } else {

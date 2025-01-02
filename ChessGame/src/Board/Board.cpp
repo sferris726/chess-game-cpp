@@ -7,6 +7,7 @@ static const std::regex PIECE_PATTERN("^[rnbqRNBQ]$");
 
 Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker)
     : m_piece_factory{piece_factory}, m_checkmate_tracker{checkmate_tracker},
+      m_white_king_pos{"e1"}, m_black_king_pos{"e8"},
       m_white_king_in_check{false}, m_black_king_in_check{false} {
   m_checkmate_tracker.onKingInCheckChange(
       [this](const IPiece::PieceColor color, const bool in_check) {
@@ -85,6 +86,16 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
       return true;
     }
 
+    if (m_board_map.at(from_pos)->getSymbol() == 'K') {
+      // Store the new King pos
+      m_white_king_pos = piece_color == IPiece::PieceColor::WHITE
+                             ? from_pos
+                             : m_white_king_pos;
+      m_black_king_pos = piece_color == IPiece::PieceColor::BLACK
+                             ? from_pos
+                             : m_black_king_pos;
+    }
+
     if (piece_color == IPiece::PieceColor::WHITE) {
       // Black was captured
       m_black_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
@@ -102,10 +113,10 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   m_board_map[from_pos] = nullptr;
 
   // Check and Checmate tracking
-  m_checkmate_tracker.scanBoard(IPiece::PieceColor::WHITE,
+  m_checkmate_tracker.scanBoard(IPiece::PieceColor::WHITE, m_white_king_pos,
                                 piece_color != IPiece::PieceColor::WHITE,
                                 m_board_map);
-  m_checkmate_tracker.scanBoard(IPiece::PieceColor::BLACK,
+  m_checkmate_tracker.scanBoard(IPiece::PieceColor::BLACK, m_black_king_pos,
                                 piece_color != IPiece::PieceColor::BLACK,
                                 m_board_map);
   return true;

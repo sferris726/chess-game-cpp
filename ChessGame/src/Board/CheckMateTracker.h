@@ -12,7 +12,8 @@ public:
   CheckMateTracker();
 
   void scanBoard(
-      const IPiece::PieceColor king_color, const bool has_next_move,
+      const IPiece::PieceColor king_color, const std::string &king_pos,
+      const bool has_next_move,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
   bool castlingScan(
@@ -57,7 +58,8 @@ private:
    */
   ThreatInfo getThreatInfo(
       Direction direction, const std::string &king_pos,
-      const IPiece::PieceColor king_color,
+      const IPiece::PieceColor king_color, const bool king_has_next_turn,
+      const bool potential_king_pos,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
 
   /**

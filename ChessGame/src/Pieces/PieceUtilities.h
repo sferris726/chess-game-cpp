@@ -30,4 +30,6 @@ bool canAttackPatternThreaten(IPiece::Direction direction,
 bool canPieceBeAttacked(const std::string &piece_pos,
                         const std::string &attack_pos,
                         const IPiece &attack_piece);
+
+IPiece::Direction getOppositeDirection(IPiece::Direction direction);
 } // namespace PieceUtilities

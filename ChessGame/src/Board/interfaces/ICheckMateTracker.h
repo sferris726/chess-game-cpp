@@ -8,7 +8,8 @@
 class ICheckMateTracker {
 public:
   virtual void scanBoard(
-      const IPiece::PieceColor king_color, const bool has_next_move,
+      const IPiece::PieceColor king_color, const std::string &king_pos,
+      const bool has_next_move,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) = 0;
 
   /**

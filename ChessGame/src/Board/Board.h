@@ -38,6 +38,8 @@ private:
   ICheckMateTracker &m_checkmate_tracker;
   std::function<void()> m_game_over_callback;
   std::map<std::string, std::unique_ptr<IPiece>> m_board_map;
+  std::string m_white_king_pos;
+  std::string m_black_king_pos;
   bool m_white_king_in_check;
   bool m_black_king_in_check;
   std::vector<std::unique_ptr<IPiece>> m_white_pieces_captured;
