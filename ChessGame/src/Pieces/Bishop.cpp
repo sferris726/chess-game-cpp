@@ -10,13 +10,14 @@ IPiece::MoveInfo Bishop::getMoveInfo(
   const auto &board_positions =
       PieceUtilities::convertBoardPosition(from_pos, to_pos);
 
-  if (board_positions[0].second == board_positions[1].second) {
-    return move_info; // Not moving diagonally
-  }
-
   // Start at from position
   int col = board_positions[0].first;
   int row = board_positions[0].second;
+
+  if (std::abs(col - board_positions[1].first) !=
+      std::abs(row - board_positions[1].second)) {
+    return move_info; // Not moving diagonally
+  }
 
   while (true) {
     if (board_positions[0].second < board_positions[1].second) {

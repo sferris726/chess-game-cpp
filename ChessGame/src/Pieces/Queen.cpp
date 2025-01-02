@@ -57,6 +57,11 @@ IPiece::MoveInfo Queen::getMoveInfo(
     }
   } else {
     // Check moving diagonally
+    if (std::abs(col - board_positions[1].first) !=
+        std::abs(row - board_positions[1].second)) {
+      return move_info; // Not moving diagonally
+    }
+
     while (true) {
       if (board_positions[0].second < board_positions[1].second) {
         ++row;

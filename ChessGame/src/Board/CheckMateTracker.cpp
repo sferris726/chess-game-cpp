@@ -72,6 +72,7 @@ void CheckMateTracker::scanBoard(
       std::string new_king_pos =
           PieceUtilities::getColLetter(king_col) + std::to_string(king_row);
 
+      // Handle Knight threats (L pattern)
       const bool is_knight1_threat =
           knight1_pos != ""
               ? checkLPatternThreat(new_king_pos, knight1_pos).first
@@ -82,6 +83,8 @@ void CheckMateTracker::scanBoard(
               ? checkLPatternThreat(new_king_pos, knight2_pos).first
               : false;
 
+      // All other threats, need to check every direction again for potential
+      // spots king can move to
       bool threat_at_new_pos = false;
       for (const Direction d : DIRECTIONS) {
         bool has_check = getThreatInfo(d, new_king_pos, king_color,
@@ -267,6 +270,7 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
             if (PieceUtilities::canAttackPatternThreaten(direction, attack,
                                                          is_one_rank)) {
               threat_info.threat_pos = curr_pos;
+              threat_info.direction_movable_for_king = false;
               attack_valid = true;
               break;
             }
@@ -278,6 +282,11 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
           break;
         }
       } else {
+        if (board_map.at(curr_pos)->getSymbol() == 'K' && potential_king_pos) {
+          continue; // Skip so that King is not blocking itself from the board
+                    // scan. This is a check for the potential moves to escape
+                    // checkmate from its current position
+        }
         // Found same color piece blocking direction from attack
         threat_info.has_check = false;
         if (!made_first_move_from_king_pos) {
@@ -536,6 +545,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
 
   for (const auto &[col, row] : bounds) {
     bool can_move_once = symbol == 'P';
+    bool moving_diagonal = false;
     int tmp_col = piece_col;
     int tmp_row = piece_row;
 
@@ -570,6 +580,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
         if (symbol == 'Q' || symbol == 'B' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE &&
              col_diff == 1 && row_diff == 1)) {
+          moving_diagonal = true;
           moveDirection(Direction::NORTH_EAST, tmp_col, tmp_row);
         }
       } else if (col_diff > 0 && row_diff < 0) {
@@ -577,6 +588,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
         if (symbol == 'Q' || symbol == 'B' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == 1 && row_diff == -1)) {
+          moving_diagonal = true;
           moveDirection(Direction::SOUTH_EAST, tmp_col, tmp_row);
         }
       } else if (col_diff < 0 && row_diff < 0) {
@@ -584,6 +596,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
         if (symbol == 'Q' || symbol == 'B' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == -1 && row_diff == -1)) {
+          moving_diagonal = true;
           moveDirection(Direction::SOUTH_WEST, tmp_col, tmp_row);
         }
       } else if (col_diff < 0 && row_diff > 0) {
@@ -591,12 +604,20 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
         if (symbol == 'Q' || symbol == 'B' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE &&
              col_diff == -1 && row_diff == 1)) {
+          moving_diagonal = true;
           moveDirection(Direction::NORTH_WEST, tmp_col, tmp_row);
         }
       }
 
       std::string new_target =
           PieceUtilities::getColLetter(tmp_col) + std::to_string(tmp_row);
+      if (symbol == 'P' && moving_diagonal) {
+        if (board_map.at(new_target) != nullptr) {
+          return true; // Pawns only move diagonal to attack
+        }
+        return false;
+      }
+
       if (board_map.find(new_target) == board_map.end() ||
           board_map.at(new_target) != nullptr) {
         return false;

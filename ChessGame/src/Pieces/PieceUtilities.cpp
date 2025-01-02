@@ -194,6 +194,8 @@ IPiece::Direction getOppositeDirection(IPiece::Direction direction) {
     return IPiece::Direction::EAST;
   case IPiece::Direction::NORTH_WEST:
     return IPiece::Direction::SOUTH_EAST;
+  default:
+    throw std::runtime_error("Invalid Direction");
   }
 }
 } // namespace PieceUtilities

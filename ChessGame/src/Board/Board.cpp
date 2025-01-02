@@ -86,16 +86,6 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
       return true;
     }
 
-    if (m_board_map.at(from_pos)->getSymbol() == 'K') {
-      // Store the new King pos
-      m_white_king_pos = piece_color == IPiece::PieceColor::WHITE
-                             ? from_pos
-                             : m_white_king_pos;
-      m_black_king_pos = piece_color == IPiece::PieceColor::BLACK
-                             ? from_pos
-                             : m_black_king_pos;
-    }
-
     if (piece_color == IPiece::PieceColor::WHITE) {
       // Black was captured
       m_black_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
@@ -103,6 +93,14 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
       // White captured
       m_white_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
     }
+  }
+
+  if (m_board_map.at(from_pos)->getSymbol() == 'K') {
+    // Store the new King pos
+    m_white_king_pos =
+        piece_color == IPiece::PieceColor::WHITE ? to_pos : m_white_king_pos;
+    m_black_king_pos =
+        piece_color == IPiece::PieceColor::BLACK ? to_pos : m_black_king_pos;
   }
 
   if (move_info.can_pawn_promote) {
