@@ -3,13 +3,9 @@
 #include "Game.h"
 #include "PieceFactory.h"
 #include <iostream>
-#include <locale>
 #include <memory>
 
 int main() {
-  std::setlocale(LC_ALL, "");
-  // std::wcout << L'♖' << std::endl;
-
   std::unique_ptr<PieceFactory> piece_factory =
       std::make_unique<PieceFactory>();
   std::unique_ptr<ICheckMateTracker> checkmate_tracker =

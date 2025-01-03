@@ -68,6 +68,7 @@ private:
    *
    * @param color
    * @param king_pos
+   * @param threat_pos
    * @param direction
    * @param board_map
    * @returns If the King can be protected or not
