@@ -67,16 +67,9 @@ void Knight::setOrigin(const int col, const int row) {
 
 char Knight::getSymbol() const { return 'N'; }
 
+std::string Knight::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265E" : "\u2658"; }
+
 IPiece::PieceColor Knight::getColor() const { return m_color; }
-
-std::string Knight::getColorStr() const {
-  return PieceUtilities::convertPieceColorToStr(m_color);
-}
-
-bool Knight::canMoveInDirection(Direction direction,
-                                const std::string &target) const {
-  return false; // Not implemented for Knight
-}
 
 std::pair<std::string, std::string> Knight::getLastMove() const {
   return m_last_move;

@@ -112,36 +112,10 @@ char Pawn::getSymbol() const { return 'P'; }
 
 IPiece::PieceColor Pawn::getColor() const { return m_color; }
 
-std::string Pawn::getColorStr() const {
-  return PieceUtilities::convertPieceColorToStr(m_color);
-}
+std::string Pawn::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265F" : "\u2659"; }
 
 std::pair<std::string, std::string> Pawn::getLastMove() const {
   return m_last_move;
-}
-
-bool Pawn::canMoveInDirection(Direction direction,
-                              const std::string &target) const {
-  int target_col = PieceUtilities::getColNum(target[0]);
-  int target_row = std::atoi(&target[1]);
-  int col_diff = target_col - PieceUtilities::getColNum(m_last_move.second[0]);
-  int row_diff = target_row - std::atoi(&m_last_move.second[1]);
-
-  if (col_diff == 1 && row_diff == 1 && m_color == PieceColor::WHITE) {
-    return direction == Direction::NORTH_EAST || direction == Direction::NORTH;
-  } else if (col_diff == -1 && row_diff == 1 && m_color == PieceColor::WHITE) {
-    return direction == Direction::NORTH_WEST || direction == Direction::NORTH;
-  } else if (col_diff == 1 && row_diff == -1 && m_color == PieceColor::BLACK) {
-    return direction == Direction::SOUTH_EAST || direction == Direction::SOUTH;
-  } else if (col_diff == -1 && row_diff == -1 && m_color == PieceColor::BLACK) {
-    return direction == Direction::SOUTH_WEST || direction == Direction::SOUTH;
-  } else {
-    if (m_color == PieceColor::WHITE) {
-      return direction == Direction::NORTH;
-    } else {
-      return direction == Direction::SOUTH;
-    }
-  }
 }
 
 std::set<IPiece::AttackPattern> Pawn::getAttackPatterns() const {

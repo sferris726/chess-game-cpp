@@ -104,24 +104,12 @@ void Queen::setOrigin(const int col, const int row) {
 
 char Queen::getSymbol() const { return 'Q'; }
 
-IPiece::PieceColor Queen::getColor() const { return m_color; }
+std::string Queen::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265B" : "\u2655"; }
 
-std::string Queen::getColorStr() const {
-  return PieceUtilities::convertPieceColorToStr(m_color);
-}
+IPiece::PieceColor Queen::getColor() const { return m_color; }
 
 std::pair<std::string, std::string> Queen::getLastMove() const {
   return m_last_move;
-}
-
-bool Queen::canMoveInDirection(Direction direction,
-                               const std::string &target) const {
-  return direction == Direction::EAST || direction == Direction::WEST ||
-         direction == Direction::NORTH || direction == Direction::SOUTH ||
-         direction == Direction::NORTH_EAST ||
-         direction == Direction::NORTH_WEST ||
-         direction == Direction::SOUTH_EAST ||
-         direction == Direction::SOUTH_WEST;
 }
 
 std::set<IPiece::AttackPattern> Queen::getAttackPatterns() const {

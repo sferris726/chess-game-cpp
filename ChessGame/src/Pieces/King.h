@@ -15,14 +15,11 @@ public:
 
   char getSymbol() const override;
 
+  std::string getDisplayPiece() const override;
+
   PieceColor getColor() const override;
 
-  std::string getColorStr() const override;
-
   std::pair<std::string, std::string> getLastMove() const override;
-
-  bool canMoveInDirection(Direction direction,
-                          const std::string &target = "-") const override;
 
   std::set<AttackPattern> getAttackPatterns() const override;
 

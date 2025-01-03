@@ -60,22 +60,12 @@ void Bishop::setOrigin(const int col, const int row) {
 
 char Bishop::getSymbol() const { return 'B'; }
 
-IPiece::PieceColor Bishop::getColor() const { return m_color; }
+std::string Bishop::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265D" : "\u2657"; }
 
-std::string Bishop::getColorStr() const {
-  return PieceUtilities::convertPieceColorToStr(m_color);
-}
+IPiece::PieceColor Bishop::getColor() const { return m_color; }
 
 std::pair<std::string, std::string> Bishop::getLastMove() const {
   return m_last_move;
-}
-
-bool Bishop::canMoveInDirection(Direction direction,
-                                const std::string &target) const {
-  return direction == Direction::NORTH_EAST ||
-         direction == Direction::NORTH_WEST ||
-         direction == Direction::SOUTH_EAST ||
-         direction == Direction::SOUTH_WEST;
 }
 
 std::set<IPiece::AttackPattern> Bishop::getAttackPatterns() const {

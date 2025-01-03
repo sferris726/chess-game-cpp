@@ -18,6 +18,7 @@ Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker)
 }
 
 void Board::displayBoard() {
+  /* Normal text board
   for (int i = 8; i >= 0; --i) {
     if (i > 0) {
       std::cout << std::to_string(i) << " ";
@@ -34,8 +35,9 @@ void Board::displayBoard() {
             PieceUtilities::getColLetter(j) + std::to_string(i);
 
         if (m_board_map[board_pos]) {
-          std::cout << m_board_map[board_pos]->getSymbol()
-                    << m_board_map[board_pos]->getColorStr() << " ]";
+          // std::cout << m_board_map[board_pos]->getSymbol()
+          //           << m_board_map[board_pos]->getColorStr() << " ]";
+          std::cout << m_board_map[board_pos]->getDisplayPiece() << "  ]";
         } else {
           std::cout << "   ]";
         }
@@ -44,6 +46,19 @@ void Board::displayBoard() {
 
     std::cout << "\n";
   }
+  */
+
+  std::cout << "  +----+----+----+----+----+----+----+----+" << std::endl;
+    for (int i = 8; i > 0; --i) {
+        std::cout << i << " |";
+        for (int j = 0; j < 8; j++) {
+            std::string pos = PieceUtilities::getColLetter(j) + std::to_string(i);
+            std::string display = m_board_map.at(pos) ? m_board_map.at(pos)->getDisplayPiece() + " " : "  ";
+            std::cout << " " << display << " |";
+        }
+        std::cout << std::endl << "  +----+----+----+----+----+----+----+----+" << std::endl;
+    }
+    std::cout << "     a    b    c    d    e    f    g    h" << std::endl;
 
   std::cout << "\n";
 }
@@ -110,7 +125,7 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   }
   m_board_map[from_pos] = nullptr;
 
-  // Check and Checmate tracking
+  // Check and Checkmate tracking
   m_checkmate_tracker.scanBoard(IPiece::PieceColor::WHITE, m_white_king_pos,
                                 piece_color != IPiece::PieceColor::WHITE,
                                 m_board_map);

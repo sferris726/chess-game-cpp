@@ -1,14 +1,6 @@
 #include "PieceUtilities.h"
 
 namespace PieceUtilities {
-std::string convertPieceColorToStr(IPiece::PieceColor color_type) {
-  if (color_type == IPiece::PieceColor::WHITE) {
-    return "w";
-  } else {
-    return "b";
-  }
-}
-
 std::vector<std::pair<int, int>>
 convertBoardPosition(const std::string &from_pos, const std::string &to_pos) {
   std::vector<std::pair<int, int>> ret;

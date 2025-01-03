@@ -49,11 +49,9 @@ public:
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) = 0;
   virtual void setOrigin(const int col, const int row) = 0;
   virtual char getSymbol() const = 0;
+  virtual std::string getDisplayPiece() const = 0;
   virtual PieceColor getColor() const = 0;
-  virtual std::string getColorStr() const = 0;
   virtual std::pair<std::string, std::string> getLastMove() const = 0;
-  virtual bool canMoveInDirection(Direction direction,
-                                  const std::string &target) const = 0;
   virtual std::set<AttackPattern> getAttackPatterns() const = 0;
   virtual ~IPiece(){};
 };

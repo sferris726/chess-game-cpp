@@ -70,20 +70,12 @@ void Rook::setOrigin(const int col, const int row) {
 
 char Rook::getSymbol() const { return 'R'; }
 
-IPiece::PieceColor Rook::getColor() const { return m_color; }
+std::string Rook::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265C" : "\u2656"; }
 
-std::string Rook::getColorStr() const {
-  return PieceUtilities::convertPieceColorToStr(m_color);
-}
+IPiece::PieceColor Rook::getColor() const { return m_color; }
 
 std::pair<std::string, std::string> Rook::getLastMove() const {
   return m_last_move;
-}
-
-bool Rook::canMoveInDirection(Direction direction,
-                              const std::string &target) const {
-  return direction == Direction::EAST || direction == Direction::WEST ||
-         direction == Direction::NORTH || direction == Direction::SOUTH;
 }
 
 std::set<IPiece::AttackPattern> Rook::getAttackPatterns() const {

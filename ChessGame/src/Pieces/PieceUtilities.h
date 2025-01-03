@@ -5,8 +5,6 @@
 #pragma once
 
 namespace PieceUtilities {
-std::string convertPieceColorToStr(IPiece::PieceColor color_type);
-
 /**
  * @brief Convert user input to a vector (from, to) of pairs (x, y)
  *
