@@ -33,7 +33,10 @@ IPiece::MoveInfo Bishop::getMoveInfo(
     }
 
     std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
-    if (board_map.at(pos) && board_map.at(pos)->getColor() == getColor()) {
+    if (board_map.at(pos)) {
+      if (pos == to_pos) {
+        break;
+      }
       return move_info;
     }
 

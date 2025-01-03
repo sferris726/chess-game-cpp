@@ -233,7 +233,7 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
   int moving_col = king_col;
   int moving_row = king_row;
   bool made_first_move_from_king_pos = false;
-  bool found_knight_in_direction = false;
+  bool same_color_knight_blocking = false;
 
   while (true) {
     moveDirection(direction, moving_col, moving_row);
@@ -248,7 +248,7 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
     if (board_map.at(curr_pos) != nullptr) {
       if (board_map.at(curr_pos)->getColor() != king_color) {
         if (board_map.at(curr_pos)->getSymbol() == 'N') {
-          found_knight_in_direction = true;
+          same_color_knight_blocking = true;
           continue; // Already checked for Knight attacks
         }
 
@@ -272,8 +272,8 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
           } else {
             if (PieceUtilities::canAttackPatternThreaten(direction, attack,
                                                          is_one_rank) &&
-                !found_knight_in_direction) { // Make sure a knight isn't
-                                              // blocking
+                !same_color_knight_blocking) { // Make sure a knight isn't
+                                               // blocking
               threat_info.threat_pos = curr_pos;
               threat_info.direction_movable_for_king = false;
               attack_valid = true;
@@ -284,8 +284,10 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
 
         if (attack_valid) {
           threat_info.has_check = true;
-          break;
         }
+
+        break; // Break as any other pieces in this direction will be blocked
+               // regardless if this piece can attack or not
       } else {
         if (board_map.at(curr_pos)->getSymbol() == 'K' && potential_king_pos) {
           continue; // Skip so that King is not blocking itself from the board

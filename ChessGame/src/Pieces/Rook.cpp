@@ -26,8 +26,10 @@ IPiece::MoveInfo Rook::getMoveInfo(
       }
 
       std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
-      if (board_map.at(pos) != nullptr &&
-          board_map.at(to_pos)->getColor() == getColor()) {
+      if (board_map.at(pos) != nullptr) {
+        if (pos == to_pos) {
+          break;
+        }
         return move_info;
       }
 
@@ -44,8 +46,10 @@ IPiece::MoveInfo Rook::getMoveInfo(
       }
 
       std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
-      if (board_map.at(pos) != nullptr &&
-          board_map.at(to_pos)->getColor() == getColor()) {
+      if (board_map.at(pos) != nullptr) {
+        if (pos == to_pos) {
+          break;
+        }
         return move_info;
       }
 
