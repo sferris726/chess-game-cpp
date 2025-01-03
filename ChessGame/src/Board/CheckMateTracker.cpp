@@ -15,7 +15,8 @@ void CheckMateTracker::onKingInCheckChange(
   m_king_in_check_callback = callback;
 }
 
-void CheckMateTracker::onCheckMate(std::function<void()> callback) {
+void CheckMateTracker::onCheckMate(
+    std::function<void(const IPiece::PieceColor)> callback) {
   m_checkmate_callback = callback;
 }
 
@@ -120,7 +121,7 @@ void CheckMateTracker::scanBoard(
       }
 
       if (is_checkmate) {
-        m_checkmate_callback();
+        m_checkmate_callback(king_color);
       } else {
         checkUpdate(king_in_check, king_color);
       }
@@ -549,7 +550,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
   const char symbol = piece.getSymbol();
 
   for (const auto &[col, row] : bounds) {
-    bool can_move_once = symbol == 'P';
+    bool can_only_move_once = symbol == 'P';
     bool moving_diagonal = false;
     int tmp_col = piece_col;
     int tmp_row = piece_row;
@@ -632,7 +633,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
         return true;
       }
 
-      if (can_move_once) {
+      if (can_only_move_once) {
         break;
       }
     }
@@ -676,7 +677,9 @@ void CheckMateTracker::moveDirection(Direction direction, int &col, int &row) {
 void CheckMateTracker::checkUpdate(const bool king_in_check,
                                    const IPiece::PieceColor color) {
   if (king_in_check) {
-    std::cout << "King is in Check!\n";
+    std::string king_color =
+        color == IPiece::PieceColor::WHITE ? "White" : "Black";
+    std::cout << king_color << " King is in Check!\n";
   }
 
   // Send out updates if check status has changed

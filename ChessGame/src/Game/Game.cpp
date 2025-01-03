@@ -70,7 +70,7 @@ void Game::start() {
     }
 
     if (m_is_game_over) {
-      std::cout << "GAME OVER!!!!!!\n";
+      m_board.displayGameOver();
       break;
     }
   }

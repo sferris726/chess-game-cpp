@@ -30,5 +30,6 @@ public:
       std::function<void(const IPiece::PieceColor color, const bool in_check)>
           callback) = 0;
 
-  virtual void onCheckMate(std::function<void()> callback) = 0;
+  virtual void
+  onCheckMate(std::function<void(const IPiece::PieceColor)> callback) = 0;
 };

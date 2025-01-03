@@ -8,12 +8,18 @@ static const std::regex PIECE_PATTERN("^[rnbqRNBQ]$");
 Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker)
     : m_piece_factory{piece_factory}, m_checkmate_tracker{checkmate_tracker},
       m_white_king_pos{"e1"}, m_black_king_pos{"e8"},
-      m_white_king_in_check{false}, m_black_king_in_check{false} {
+      m_white_king_in_check{false}, m_black_king_in_check{false},
+      m_end_game_info(EndGameInfo{}) {
   m_checkmate_tracker.onKingInCheckChange(
       [this](const IPiece::PieceColor color, const bool in_check) {
         handleKingInCheckUpdate(color, in_check);
       });
-  m_checkmate_tracker.onCheckMate([this]() { m_game_over_callback(); });
+  m_checkmate_tracker.onCheckMate(
+      [this](const IPiece::PieceColor checkmated_color) {
+        handleGameOver(true, checkmated_color == IPiece::PieceColor::WHITE
+                                 ? IPiece::PieceColor::BLACK
+                                 : IPiece::PieceColor::WHITE);
+      });
   generateBoard();
 }
 
@@ -66,6 +72,17 @@ void Board::displayBoard() {
   std::cout << "\n";
 }
 
+void Board::displayGameOver() {
+  displayBoard();
+
+  std::cout << "Game Stats:\n";
+  std::cout << (m_end_game_info.winning_color == IPiece::PieceColor::WHITE
+                    ? "White"
+                    : "Black")
+            << " win" << (m_end_game_info.is_checkmate ? ", Checkmate!" : "")
+            << std::endl;
+}
+
 bool Board::movePiece(const IPiece::PieceColor piece_color,
                       const std::string &from_pos, const std::string &to_pos) {
   // make sure from_pos and to_pos are different and from_pos has a piece
@@ -100,7 +117,7 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   if (m_board_map.at(to_pos) != nullptr) {
     if (m_board_map.at(to_pos)->getSymbol() == 'K') {
       // King was captured, game over
-      m_game_over_callback();
+      handleGameOver(false, piece_color);
       return true;
     }
 
@@ -332,4 +349,11 @@ void Board::handlePawnPromotion(const std::string &pos,
                  "Rook\nN = Knight\nB = Bishop\n";
     handlePawnPromotion(pos, piece_color);
   }
+}
+
+void Board::handleGameOver(const bool is_checkmate,
+                           const IPiece::PieceColor winning_color) {
+  m_end_game_info.is_checkmate = is_checkmate;
+  m_end_game_info.winning_color = winning_color;
+  m_game_over_callback();
 }

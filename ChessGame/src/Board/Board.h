@@ -15,6 +15,7 @@ public:
   Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker);
 
   void displayBoard() override;
+  void displayGameOver() override;
   bool movePiece(const IPiece::PieceColor piece_color,
                  const std::string &from_pos,
                  const std::string &to_pos) override;
@@ -23,6 +24,11 @@ public:
   void onGameOver(std::function<void()> callback) override;
 
 private:
+  struct EndGameInfo {
+    bool is_checkmate;
+    IPiece::PieceColor winning_color;
+  };
+
   void generateBoard();
   void generatePawnRow(std::map<std::string, std::unique_ptr<IPiece>> &in_map,
                        IPiece::PieceColor color);
@@ -33,6 +39,8 @@ private:
                                const bool in_check);
   void handlePawnPromotion(const std::string &pos,
                            const IPiece::PieceColor piece_color);
+  void handleGameOver(const bool is_checkmate,
+                      const IPiece::PieceColor winning_color);
 
   PieceFactory &m_piece_factory;
   ICheckMateTracker &m_checkmate_tracker;
@@ -44,4 +52,5 @@ private:
   bool m_black_king_in_check;
   std::vector<std::unique_ptr<IPiece>> m_white_pieces_captured;
   std::vector<std::unique_ptr<IPiece>> m_black_pieces_captured;
+  EndGameInfo m_end_game_info;
 };

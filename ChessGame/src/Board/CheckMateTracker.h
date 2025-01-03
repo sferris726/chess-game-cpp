@@ -25,7 +25,8 @@ public:
       std::function<void(const IPiece::PieceColor color, const bool in_check)>
           callback) override;
 
-  void onCheckMate(std::function<void()> callback) override;
+  void
+  onCheckMate(std::function<void(const IPiece::PieceColor)> callback) override;
 
 private:
   struct ThreatInfo {
@@ -104,7 +105,7 @@ private:
 
   std::function<void(const IPiece::PieceColor color, const bool in_check)>
       m_king_in_check_callback;
-  std::function<void()> m_checkmate_callback;
+  std::function<void(const IPiece::PieceColor)> m_checkmate_callback;
   bool m_white_king_in_check;
   bool m_black_king_in_check;
 };
