@@ -28,7 +28,7 @@ IPiece::MoveInfo Queen::getMoveInfo(
 
       std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) != nullptr) {
-        if (pos == to_pos) {
+        if (board_map.at(pos)->getColor() != m_color && pos == to_pos) {
           break;
         }
         return move_info;
@@ -49,7 +49,7 @@ IPiece::MoveInfo Queen::getMoveInfo(
 
       std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) != nullptr) {
-        if (pos == to_pos) {
+        if (board_map.at(pos)->getColor() != m_color && pos == to_pos) {
           break;
         }
         return move_info;
@@ -81,7 +81,7 @@ IPiece::MoveInfo Queen::getMoveInfo(
 
       std::string pos = PieceUtilities::getColLetter(col) + std::to_string(row);
       if (board_map.at(pos) != nullptr) {
-        if (pos == to_pos) {
+        if (board_map.at(pos)->getColor() != m_color && pos == to_pos) {
           break;
         }
         return move_info;
