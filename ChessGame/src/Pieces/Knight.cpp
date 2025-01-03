@@ -67,7 +67,9 @@ void Knight::setOrigin(const int col, const int row) {
 
 char Knight::getSymbol() const { return 'N'; }
 
-std::string Knight::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265E" : "\u2658"; }
+std::string Knight::getDisplayPiece() const {
+  return m_color == PieceColor::WHITE ? "\u265E" : "\u2658";
+}
 
 IPiece::PieceColor Knight::getColor() const { return m_color; }
 

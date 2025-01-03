@@ -69,7 +69,9 @@ void King::setOrigin(const int col, const int row) {
 
 char King::getSymbol() const { return 'K'; }
 
-std::string King::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265A" : "\u2654"; }
+std::string King::getDisplayPiece() const {
+  return m_color == PieceColor::WHITE ? "\u265A" : "\u2654";
+}
 
 IPiece::PieceColor King::getColor() const { return m_color; }
 

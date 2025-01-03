@@ -70,7 +70,9 @@ void Rook::setOrigin(const int col, const int row) {
 
 char Rook::getSymbol() const { return 'R'; }
 
-std::string Rook::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265C" : "\u2656"; }
+std::string Rook::getDisplayPiece() const {
+  return m_color == PieceColor::WHITE ? "\u265C" : "\u2656";
+}
 
 IPiece::PieceColor Rook::getColor() const { return m_color; }
 

@@ -105,11 +105,14 @@ void CheckMateTracker::scanBoard(
       bool is_checkmate = false;
 
       if (threats.size() > 1) {
-        is_checkmate = true; // Doesn't matter if the King can be protected, since there are multiple attack vectors that have check
+        is_checkmate =
+            true; // Doesn't matter if the King can be protected, since there
+                  // are multiple attack vectors that have check
       } else {
-        const auto& threat = threats[0];
+        const auto &threat = threats[0];
         for (const auto direction : threat.second) {
-          if (!scanForProtections(king_color, king_pos, threat.first, direction, board_map)) {
+          if (!scanForProtections(king_color, king_pos, threat.first, direction,
+                                  board_map)) {
             is_checkmate = true;
             break;
           }
@@ -229,6 +232,7 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
   int moving_col = king_col;
   int moving_row = king_row;
   bool made_first_move_from_king_pos = false;
+  bool found_knight_in_direction = false;
 
   while (true) {
     moveDirection(direction, moving_col, moving_row);
@@ -243,10 +247,9 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
     if (board_map.at(curr_pos) != nullptr) {
       if (board_map.at(curr_pos)->getColor() != king_color) {
         if (board_map.at(curr_pos)->getSymbol() == 'N') {
+          found_knight_in_direction = true;
           continue; // Already checked for Knight attacks
         }
-
-        std::cout << "THREAT PIECE " << curr_pos << std::endl;
 
         // Found an opponent piece, check if the attack pattern can threaten the
         // King
@@ -267,8 +270,9 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
             break; // King can attack this square
           } else {
             if (PieceUtilities::canAttackPatternThreaten(direction, attack,
-                                                         is_one_rank)) {
-              std::cout << "THREAT PIECE CAN ATTACK" <<  std::endl;
+                                                         is_one_rank) &&
+                !found_knight_in_direction) { // Make sure a knight isn't
+                                              // blocking
               threat_info.threat_pos = curr_pos;
               threat_info.direction_movable_for_king = false;
               attack_valid = true;
@@ -289,7 +293,8 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
         }
         // Found same color piece blocking direction from attack
         threat_info.has_check = false;
-        if (!made_first_move_from_king_pos) { // More than one space from the King
+        if (!made_first_move_from_king_pos) { // More than one space from the
+                                              // King
           threat_info.direction_movable_for_king = false;
         }
         break;
@@ -327,7 +332,7 @@ bool CheckMateTracker::scanForProtections(
   // Can threat piece be attacked
   for (const std::string &pos : potential_protection_pieces) {
     if (PieceUtilities::canPieceBeAttacked(threat_pos, pos,
-                                          *board_map.at(pos))) {
+                                           *board_map.at(pos))) {
       return true; // Threat piece can be attacked
     }
   }

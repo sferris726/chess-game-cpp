@@ -60,7 +60,9 @@ void Bishop::setOrigin(const int col, const int row) {
 
 char Bishop::getSymbol() const { return 'B'; }
 
-std::string Bishop::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265D" : "\u2657"; }
+std::string Bishop::getDisplayPiece() const {
+  return m_color == PieceColor::WHITE ? "\u265D" : "\u2657";
+}
 
 IPiece::PieceColor Bishop::getColor() const { return m_color; }
 

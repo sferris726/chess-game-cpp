@@ -104,7 +104,9 @@ void Queen::setOrigin(const int col, const int row) {
 
 char Queen::getSymbol() const { return 'Q'; }
 
-std::string Queen::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u265B" : "\u2655"; }
+std::string Queen::getDisplayPiece() const {
+  return m_color == PieceColor::WHITE ? "\u265B" : "\u2655";
+}
 
 IPiece::PieceColor Queen::getColor() const { return m_color; }
 

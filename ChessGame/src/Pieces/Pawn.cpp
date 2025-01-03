@@ -112,7 +112,9 @@ char Pawn::getSymbol() const { return 'P'; }
 
 IPiece::PieceColor Pawn::getColor() const { return m_color; }
 
-std::string Pawn::getDisplayPiece() const { return m_color == PieceColor::WHITE ? "\u2659" : "\u265F"; }
+std::string Pawn::getDisplayPiece() const {
+  return m_color == PieceColor::WHITE ? "\u2659" : "\u265F";
+}
 
 std::pair<std::string, std::string> Pawn::getLastMove() const {
   return m_last_move;

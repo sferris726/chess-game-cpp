@@ -49,16 +49,19 @@ void Board::displayBoard() {
   */
 
   std::cout << "  +----+----+----+----+----+----+----+----+" << std::endl;
-    for (int i = 8; i > 0; --i) {
-        std::cout << i << " |";
-        for (int j = 0; j < 8; j++) {
-            std::string pos = PieceUtilities::getColLetter(j) + std::to_string(i);
-            std::string display = m_board_map.at(pos) ? m_board_map.at(pos)->getDisplayPiece() + " " : "  ";
-            std::cout << " " << display << " |";
-        }
-        std::cout << std::endl << "  +----+----+----+----+----+----+----+----+" << std::endl;
+  for (int i = 8; i > 0; --i) {
+    std::cout << i << " |";
+    for (int j = 0; j < 8; j++) {
+      std::string pos = PieceUtilities::getColLetter(j) + std::to_string(i);
+      std::string display = m_board_map.at(pos)
+                                ? m_board_map.at(pos)->getDisplayPiece() + " "
+                                : "  ";
+      std::cout << " " << display << " |";
     }
-    std::cout << "     a    b    c    d    e    f    g    h" << std::endl;
+    std::cout << std::endl
+              << "  +----+----+----+----+----+----+----+----+" << std::endl;
+  }
+  std::cout << "     a    b    c    d    e    f    g    h" << std::endl;
 
   std::cout << "\n";
 }
