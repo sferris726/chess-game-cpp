@@ -583,7 +583,8 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE &&
              col_diff == 1 && row_diff == 1)) {
           moving_diagonal = true;
-          PieceUtilities::moveDirection(Direction::NORTH_EAST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::NORTH_EAST, tmp_col,
+                                        tmp_row);
         }
       } else if (col_diff > 0 && row_diff < 0) {
         // moving southeast
@@ -591,7 +592,8 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == 1 && row_diff == -1)) {
           moving_diagonal = true;
-          PieceUtilities::moveDirection(Direction::SOUTH_EAST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::SOUTH_EAST, tmp_col,
+                                        tmp_row);
         }
       } else if (col_diff < 0 && row_diff < 0) {
         // moving southwest
@@ -599,7 +601,8 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == -1 && row_diff == -1)) {
           moving_diagonal = true;
-          PieceUtilities::moveDirection(Direction::SOUTH_WEST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::SOUTH_WEST, tmp_col,
+                                        tmp_row);
         }
       } else if (col_diff < 0 && row_diff > 0) {
         // moving northwest
@@ -607,7 +610,8 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE &&
              col_diff == -1 && row_diff == 1)) {
           moving_diagonal = true;
-          PieceUtilities::moveDirection(Direction::NORTH_WEST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::NORTH_WEST, tmp_col,
+                                        tmp_row);
         }
       }
 

@@ -92,23 +92,26 @@ std::set<IPiece::AttackPattern> King::getAttackPatterns() const {
   return ret;
 }
 
-bool King::doesMovePutKingInCheck(const std::string& target_pos, const std::map<std::string, std::unique_ptr<IPiece>>& board_map) {
+bool King::doesMovePutKingInCheck(
+    const std::string &target_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   int col = PieceUtilities::getColNum(target_pos[0]);
   int row = std::atoi(&target_pos[1]);
 
   // Check L Pattern threat first
-  for (const auto& [pos, piece] : board_map) {
+  for (const auto &[pos, piece] : board_map) {
     if (piece && piece->getColor() != m_color && piece->getSymbol() == 'N') {
       int knight_col = PieceUtilities::getColNum(pos[0]);
       int knight_row = std::atoi(&pos[1]);
       int col_diff = std::abs(col - knight_col);
       int row_diff = std::abs(row - knight_row);
-      if ((col_diff == 2 && row_diff == 1) || (row_diff == 2 && col_diff == 1)) {
+      if ((col_diff == 2 && row_diff == 1) ||
+          (row_diff == 2 && col_diff == 1)) {
         return true; // Knight has king in check
       }
     }
   }
-  
+
   // Check all other threats
   for (const auto direction : PieceUtilities::DIRECTIONS) {
     int c = col;
@@ -129,7 +132,8 @@ bool King::doesMovePutKingInCheck(const std::string& target_pos, const std::map<
         } else {
           auto attack_patterns = board_map.at(new_pos)->getAttackPatterns();
           for (const auto attack : attack_patterns) {
-            if (PieceUtilities::canAttackPatternThreaten(direction, attack, is_one_pace)) {
+            if (PieceUtilities::canAttackPatternThreaten(direction, attack,
+                                                         is_one_pace)) {
               return true; // Will be in check
             }
           }

@@ -24,7 +24,9 @@ public:
   std::set<AttackPattern> getAttackPatterns() const override;
 
 private:
-  bool doesMovePutKingInCheck(const std::string& target_pos, const std::map<std::string, std::unique_ptr<IPiece>>& board_map);
+  bool doesMovePutKingInCheck(
+      const std::string &target_pos,
+      const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
 
   PieceColor m_color;
   std::pair<int, int> m_origin;
