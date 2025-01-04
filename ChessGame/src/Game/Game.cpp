@@ -52,7 +52,8 @@ void Game::start() {
       } else if (str1 == "castle") {
         const bool castling_success = m_board.tryCastling(color_move, str2);
         if (castling_success) {
-          ++m_turn_count;
+          m_turn_count++;
+          m_display_board = true;
         } else {
           std::cout << "Castling invalid:\n- Valid command example: castle "
                        "a4\n- Ensure King is not in check or moving through or "
