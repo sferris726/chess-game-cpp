@@ -68,7 +68,7 @@ void Game::start() {
         }
       }
     } else {
-      std::cout << "Please enter exactly 2 inputs (start, end). Ex. a2 a4"
+      std::cout << "Invalid input, enter help or h for rules and instructions"
                 << std::endl;
     }
 

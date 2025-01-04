@@ -56,6 +56,11 @@ IPiece::MoveInfo King::getMoveInfo(
     }
   }
 
+  // Make sure move does not put King in check (Illegal move)
+  if (doesMovePutKingInCheck(to_pos, board_map)) {
+    return move_info;
+  }
+
   m_last_move.first = from_pos;
   m_last_move.second = to_pos;
   move_info.is_valid = true;
@@ -85,4 +90,55 @@ std::set<IPiece::AttackPattern> King::getAttackPatterns() const {
   ret.insert(AttackPattern::VERTICAL_ONE);
   ret.insert(AttackPattern::DIAGONAL_ONE);
   return ret;
+}
+
+bool King::doesMovePutKingInCheck(const std::string& target_pos, const std::map<std::string, std::unique_ptr<IPiece>>& board_map) {
+  int col = PieceUtilities::getColNum(target_pos[0]);
+  int row = std::atoi(&target_pos[1]);
+
+  // Check L Pattern threat first
+  for (const auto& [pos, piece] : board_map) {
+    if (piece && piece->getColor() != m_color && piece->getSymbol() == 'N') {
+      int knight_col = PieceUtilities::getColNum(pos[0]);
+      int knight_row = std::atoi(&pos[1]);
+      int col_diff = std::abs(col - knight_col);
+      int row_diff = std::abs(row - knight_row);
+      if ((col_diff == 2 && row_diff == 1) || (row_diff == 2 && col_diff == 1)) {
+        return true; // Knight has king in check
+      }
+    }
+  }
+  
+  // Check all other threats
+  for (const auto direction : PieceUtilities::DIRECTIONS) {
+    int c = col;
+    int r = row;
+    bool is_one_pace = true;
+
+    while (true) {
+      PieceUtilities::moveDirection(direction, c, r);
+
+      std::string new_pos = PieceUtilities::getColLetter(c) + std::to_string(r);
+      if (board_map.find(new_pos) == board_map.end()) {
+        break;
+      }
+
+      if (board_map.at(new_pos) != nullptr) {
+        if (board_map.at(new_pos)->getColor() == m_color) {
+          break; // Ally piece blocking
+        } else {
+          auto attack_patterns = board_map.at(new_pos)->getAttackPatterns();
+          for (const auto attack : attack_patterns) {
+            if (PieceUtilities::canAttackPatternThreaten(direction, attack, is_one_pace)) {
+              return true; // Will be in check
+            }
+          }
+        }
+      }
+
+      is_one_pace = false;
+    }
+  }
+
+  return false;
 }

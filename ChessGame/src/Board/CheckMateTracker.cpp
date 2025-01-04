@@ -1,11 +1,5 @@
 #include "CheckMateTracker.h"
 
-static const std::set<IPiece::Direction> DIRECTIONS = {
-    IPiece::Direction::NORTH, IPiece::Direction::NORTH_EAST,
-    IPiece::Direction::EAST,  IPiece::Direction::SOUTH_EAST,
-    IPiece::Direction::SOUTH, IPiece::Direction::SOUTH_WEST,
-    IPiece::Direction::WEST,  IPiece::Direction::NORTH_WEST};
-
 CheckMateTracker::CheckMateTracker()
     : m_white_king_in_check{false}, m_black_king_in_check{false} {}
 
@@ -46,7 +40,7 @@ void CheckMateTracker::scanBoard(
 
   // Scan the board for threats to the King position
   std::set<Direction> potential_movable_directions;
-  for (Direction direction : DIRECTIONS) {
+  for (Direction direction : PieceUtilities::DIRECTIONS) {
     auto threat_info = getThreatInfo(direction, king_pos, king_color,
                                      has_next_move, false, board_map);
 
@@ -69,7 +63,7 @@ void CheckMateTracker::scanBoard(
     for (const Direction direction : potential_movable_directions) {
       int king_col = PieceUtilities::getColNum(king_pos[0]);
       int king_row = std::atoi(&king_pos[1]);
-      moveDirection(direction, king_col, king_row);
+      PieceUtilities::moveDirection(direction, king_col, king_row);
       std::string new_king_pos =
           PieceUtilities::getColLetter(king_col) + std::to_string(king_row);
 
@@ -87,7 +81,7 @@ void CheckMateTracker::scanBoard(
       // All other threats, need to check every direction again for potential
       // spots king can move to
       bool threat_at_new_pos = false;
-      for (const Direction d : DIRECTIONS) {
+      for (const Direction d : PieceUtilities::DIRECTIONS) {
         bool has_check = getThreatInfo(d, new_king_pos, king_color,
                                        has_next_move, true, board_map)
                              .has_check;
@@ -147,7 +141,7 @@ bool CheckMateTracker::castlingScan(
   }
 
   // Check if King is threatened by other pieces
-  for (const Direction direction : DIRECTIONS) {
+  for (const Direction direction : PieceUtilities::DIRECTIONS) {
     const bool pos1_in_check =
         getThreatInfo(direction, pos1, color, false, false, board_map)
             .has_check;
@@ -236,7 +230,7 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
   bool same_color_knight_blocking = false;
 
   while (true) {
-    moveDirection(direction, moving_col, moving_row);
+    PieceUtilities::moveDirection(direction, moving_col, moving_row);
 
     if ((moving_col < 0 || moving_col > 7) ||
         (moving_row < 1 || moving_row > 8)) {
@@ -321,7 +315,7 @@ bool CheckMateTracker::scanForProtections(
   std::vector<std::string> potential_protection_pieces;
 
   // Scan for ally pieces that can potentially attack the attacking piece
-  for (const auto direction : DIRECTIONS) {
+  for (const auto direction : PieceUtilities::DIRECTIONS) {
     auto pieces = getOpposingPiecesInDirection(
         direction,
         color == IPiece::PieceColor::WHITE
@@ -437,7 +431,7 @@ std::vector<std::string> CheckMateTracker::getOpposingPiecesInDirection(
   bool found_first_opposing_piece = false;
 
   while (true) {
-    moveDirection(direction, col, row);
+    PieceUtilities::moveDirection(direction, col, row);
 
     if ((col <= 0 || col > 7) || (row < 1 || row > 8)) {
       break; // Out of bounds
@@ -493,7 +487,7 @@ bool CheckMateTracker::canKingBeProtected(
   // Get the bounds between King and threat
   std::vector<std::pair<int, int>> bounds;
   while (true) {
-    moveDirection(threat_direction, king_col, king_row);
+    PieceUtilities::moveDirection(threat_direction, king_col, king_row);
 
     if ((king_col == threat_col && king_row == threat_row) ||
         ((king_col < 0 || king_col > 7) || (king_row < 1 || king_row > 8))) {
@@ -565,23 +559,23 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
         // moving north
         if (symbol == 'Q' || symbol == 'R' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE)) {
-          moveDirection(Direction::NORTH, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::NORTH, tmp_col, tmp_row);
         }
       } else if (col_diff == 0 && row_diff < 0) {
         // moving south
         if (symbol == 'Q' || symbol == 'R' ||
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK)) {
-          moveDirection(Direction::SOUTH, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::SOUTH, tmp_col, tmp_row);
         }
       } else if (col_diff > 0 && row_diff == 0) {
         // moving east
         if (symbol == 'Q' || symbol == 'R') {
-          moveDirection(Direction::EAST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::EAST, tmp_col, tmp_row);
         }
       } else if (col_diff < 0 && row_diff == 0) {
         // moving west
         if (symbol == 'Q' || symbol == 'R') {
-          moveDirection(Direction::WEST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::WEST, tmp_col, tmp_row);
         }
       } else if (col_diff > 0 && row_diff > 0) {
         // moving northeast
@@ -589,7 +583,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE &&
              col_diff == 1 && row_diff == 1)) {
           moving_diagonal = true;
-          moveDirection(Direction::NORTH_EAST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::NORTH_EAST, tmp_col, tmp_row);
         }
       } else if (col_diff > 0 && row_diff < 0) {
         // moving southeast
@@ -597,7 +591,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == 1 && row_diff == -1)) {
           moving_diagonal = true;
-          moveDirection(Direction::SOUTH_EAST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::SOUTH_EAST, tmp_col, tmp_row);
         }
       } else if (col_diff < 0 && row_diff < 0) {
         // moving southwest
@@ -605,7 +599,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::BLACK &&
              col_diff == -1 && row_diff == -1)) {
           moving_diagonal = true;
-          moveDirection(Direction::SOUTH_WEST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::SOUTH_WEST, tmp_col, tmp_row);
         }
       } else if (col_diff < 0 && row_diff > 0) {
         // moving northwest
@@ -613,7 +607,7 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
             (symbol == 'P' && piece.getColor() == IPiece::PieceColor::WHITE &&
              col_diff == -1 && row_diff == 1)) {
           moving_diagonal = true;
-          moveDirection(Direction::NORTH_WEST, tmp_col, tmp_row);
+          PieceUtilities::moveDirection(Direction::NORTH_WEST, tmp_col, tmp_row);
         }
       }
 
@@ -641,39 +635,6 @@ bool CheckMateTracker::canPieceMoveIntoBounds(
     }
   }
   return false;
-}
-
-void CheckMateTracker::moveDirection(Direction direction, int &col, int &row) {
-  switch (direction) {
-  case Direction::NORTH:
-    ++row;
-    break;
-  case Direction::NORTH_EAST:
-    ++col;
-    ++row;
-    break;
-  case Direction::EAST:
-    ++col;
-    break;
-  case Direction::SOUTH_EAST:
-    ++col;
-    --row;
-    break;
-  case Direction::SOUTH:
-    --row;
-    break;
-  case Direction::SOUTH_WEST:
-    --col;
-    --row;
-    break;
-  case Direction::WEST:
-    --col;
-    break;
-  case Direction::NORTH_WEST:
-    --col;
-    ++row;
-    break;
-  }
 }
 
 void CheckMateTracker::checkUpdate(const bool king_in_check,

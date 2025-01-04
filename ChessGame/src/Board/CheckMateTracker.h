@@ -99,8 +99,6 @@ private:
       const std::vector<std::pair<int, int>> bounds,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
 
-  void moveDirection(Direction direction, int &col, int &row);
-
   void checkUpdate(const bool king_in_check, const IPiece::PieceColor color);
 
   std::function<void(const IPiece::PieceColor color, const bool in_check)>

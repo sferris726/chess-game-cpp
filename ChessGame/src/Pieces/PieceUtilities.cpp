@@ -190,4 +190,37 @@ IPiece::Direction getOppositeDirection(IPiece::Direction direction) {
     throw std::runtime_error("Invalid Direction");
   }
 }
+
+void moveDirection(IPiece::Direction direction, int &col, int &row) {
+  switch (direction) {
+  case IPiece::Direction::NORTH:
+    ++row;
+    break;
+  case IPiece::Direction::NORTH_EAST:
+    ++col;
+    ++row;
+    break;
+  case IPiece::Direction::EAST:
+    ++col;
+    break;
+  case IPiece::Direction::SOUTH_EAST:
+    ++col;
+    --row;
+    break;
+  case IPiece::Direction::SOUTH:
+    --row;
+    break;
+  case IPiece::Direction::SOUTH_WEST:
+    --col;
+    --row;
+    break;
+  case IPiece::Direction::WEST:
+    --col;
+    break;
+  case IPiece::Direction::NORTH_WEST:
+    --col;
+    ++row;
+    break;
+  }
+}
 } // namespace PieceUtilities

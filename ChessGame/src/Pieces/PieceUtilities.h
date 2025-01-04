@@ -5,6 +5,12 @@
 #pragma once
 
 namespace PieceUtilities {
+    static const std::set<IPiece::Direction> DIRECTIONS = {
+    IPiece::Direction::NORTH, IPiece::Direction::NORTH_EAST,
+    IPiece::Direction::EAST,  IPiece::Direction::SOUTH_EAST,
+    IPiece::Direction::SOUTH, IPiece::Direction::SOUTH_WEST,
+    IPiece::Direction::WEST,  IPiece::Direction::NORTH_WEST};
+    
 /**
  * @brief Convert user input to a vector (from, to) of pairs (x, y)
  *
@@ -30,4 +36,6 @@ bool canPieceBeAttacked(const std::string &piece_pos,
                         const IPiece &attack_piece);
 
 IPiece::Direction getOppositeDirection(IPiece::Direction direction);
+
+void moveDirection(IPiece::Direction direction, int &col, int &row);
 } // namespace PieceUtilities
