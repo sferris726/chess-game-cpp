@@ -24,58 +24,43 @@ Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker)
 }
 
 void Board::displayBoard() {
-  /* Normal text board
-  for (int i = 8; i >= 0; --i) {
-    if (i > 0) {
-      std::cout << std::to_string(i) << " ";
-    } else {
-      std::cout << "  ";
-    }
-
-    for (int j = 0; j < 8; ++j) {
-      if (i == 0) {
-        std::cout << "   " << PieceUtilities::getColLetter(j) << "  ";
-      } else {
-        std::cout << "[ ";
-        const std::string board_pos =
-            PieceUtilities::getColLetter(j) + std::to_string(i);
-
-        if (m_board_map[board_pos]) {
-          // std::cout << m_board_map[board_pos]->getSymbol()
-          //           << m_board_map[board_pos]->getColorStr() << " ]";
-          std::cout << m_board_map[board_pos]->getDisplayPiece() << "  ]";
-        } else {
-          std::cout << "   ]";
-        }
-      }
-    }
-
-    std::cout << "\n";
-  }
-  */
-
   std::cout << "  +----+----+----+----+----+----+----+----+" << std::endl;
   for (int i = 8; i > 0; --i) {
     std::cout << i << " |";
-    for (int j = 0; j < 8; j++) {
+    for (int j = 0; j < 8; ++j) {
       std::string pos = PieceUtilities::getColLetter(j) + std::to_string(i);
       std::string display = m_board_map.at(pos)
                                 ? m_board_map.at(pos)->getDisplayPiece() + " "
                                 : "  ";
-      std::cout << " " << display << " |";
+
+      if ((i + j) % 2 == 0) {
+        std::cout << "\x1b[48;5;234m ";
+      } else {
+        std::cout << "\x1b[48;5;94m ";
+      }
+
+      if (display != "  ") {
+        if (m_board_map.at(pos)->getColor() == IPiece::PieceColor::WHITE) {
+          std::cout << "\x1b[38;5;15m" << display;
+        } else {
+          std::cout << "\x1b[1m\x1b[38;5;214m" << display;
+        }
+      } else {
+        std::cout << "  ";
+      }
+      std::cout << " \x1b[0m|";
     }
     std::cout << std::endl
               << "  +----+----+----+----+----+----+----+----+" << std::endl;
   }
-  std::cout << "     a    b    c    d    e    f    g    h" << std::endl;
 
+  std::cout << "     a    b    c    d    e    f    g    h" << std::endl;
   std::cout << "\n";
 }
 
 void Board::displayGameOver() {
   displayBoard();
 
-  std::cout << "Game Stats:\n";
   std::cout << (m_end_game_info.winning_color == IPiece::PieceColor::WHITE
                     ? "White"
                     : "Black")
@@ -104,13 +89,7 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
 
   if (move_info.en_passant_valid == true) {
     const std::string opp_pos = move_info.en_passant_opponent;
-    if (piece_color == IPiece::PieceColor::WHITE) {
-      // Black was captured
-      m_black_pieces_captured.push_back(std::move(m_board_map.at(opp_pos)));
-    } else {
-      // White captured
-      m_white_pieces_captured.push_back(std::move(m_board_map.at(opp_pos)));
-    }
+    m_board_map.erase(opp_pos);
     m_board_map[opp_pos] = nullptr;
   }
 
@@ -121,13 +100,7 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
       return true;
     }
 
-    if (piece_color == IPiece::PieceColor::WHITE) {
-      // Black was captured
-      m_black_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
-    } else {
-      // White captured
-      m_white_pieces_captured.push_back(std::move(m_board_map.at(to_pos)));
-    }
+    m_board_map.erase(to_pos); // Captured
   }
 
   if (m_board_map.at(from_pos)->getSymbol() == 'K') {
@@ -162,26 +135,20 @@ bool Board::tryCastling(const IPiece::PieceColor piece_color,
     return false; // Castling not allowed if king is in check
   }
 
-  if (m_board_map.find(target_pos) == m_board_map.end()) {
-    return false;
-  }
-
-  if (m_board_map.at(target_pos) != nullptr) {
+  if (m_board_map.find(target_pos) == m_board_map.end() ||
+      m_board_map.at(target_pos) != nullptr) {
     return false;
   }
 
   std::string king_pos;
-  for (const auto &[pos, piece] : m_board_map) {
-    if (piece) {
-      if (piece->getSymbol() == 'K' && piece->getColor() == piece_color) {
-        if (piece->getLastMove().first == "-") {
-          king_pos = pos;
-          break;
-        } else {
-          return false; // King has made a move already
-        }
-      }
-    }
+  if (piece_color == IPiece::PieceColor::WHITE) {
+    king_pos = m_white_king_pos;
+  } else {
+    king_pos = m_black_king_pos;
+  }
+
+  if (m_board_map.at(king_pos)->getLastMove().first != "-") {
+    return false; // King has made a move already
   }
 
   int target_col = PieceUtilities::getColNum(target_pos[0]);

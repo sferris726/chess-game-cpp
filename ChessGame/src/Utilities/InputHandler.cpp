@@ -1,5 +1,4 @@
 #include "InputHandler.h"
-#include <iostream>
 
 std::string InputHandler::getInput(const std::string &prompt) {
   std::string input;
@@ -11,7 +10,13 @@ std::string InputHandler::getInput(const std::string &prompt) {
 
 bool InputHandler::parseStr(const std::string &input, std::string &output1,
                             std::string &output2) {
-  std::stringstream ss(input);
+  auto i2 = input;
+  std::stringstream ss(i2);
   ss >> output1 >> output2;
-  return !ss.fail();
+
+  if (ss >> i2) {
+    return false;
+  }
+
+  return !output1.empty();
 }
