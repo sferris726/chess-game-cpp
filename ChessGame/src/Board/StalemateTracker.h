@@ -15,8 +15,7 @@ public:
       const IPiece::PieceColor king_color, const std::string &king_pos,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
-  void
-  onStalemate(std::function<void(const IPiece::PieceColor)> callback) override;
+  void onStalemate(std::function<void()> callback) override;
 
 private:
   bool doesKingHaveLegalMove(
@@ -35,5 +34,5 @@ private:
   std::vector<std::string> getPossiblePositionsForKnight(const int curr_col,
                                                          const int curr_row);
 
-  std::function<void(const IPiece::PieceColor)> m_stalemate_callback;
+  std::function<void()> m_stalemate_callback;
 };

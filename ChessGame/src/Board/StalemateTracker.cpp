@@ -2,8 +2,7 @@
 
 StalemateTracker::StalemateTracker() {}
 
-void StalemateTracker::onStalemate(
-    std::function<void(const IPiece::PieceColor)> callback) {
+void StalemateTracker::onStalemate(std::function<void()> callback) {
   m_stalemate_callback = callback;
 }
 
@@ -63,7 +62,7 @@ void StalemateTracker::scanBoard(
       }
     }
 
-    m_stalemate_callback(king_color);
+    m_stalemate_callback();
   }
 }
 

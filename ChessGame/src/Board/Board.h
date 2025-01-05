@@ -28,7 +28,8 @@ public:
 private:
   struct EndGameInfo {
     bool is_checkmate;
-    IPiece::PieceColor winning_color;
+    bool is_stalemate;
+    std::string winning_color;
   };
 
   void generateBoard();
@@ -41,8 +42,8 @@ private:
                                const bool in_check);
   void handlePawnPromotion(const std::string &pos,
                            const IPiece::PieceColor piece_color);
-  void handleGameOver(const bool is_checkmate,
-                      const IPiece::PieceColor winning_color);
+  void handleGameOver(const bool is_checkmate, const bool is_stalemate,
+                      const std::string &winning_color);
 
   PieceFactory &m_piece_factory;
   ICheckMateTracker &m_checkmate_tracker;

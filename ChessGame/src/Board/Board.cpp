@@ -17,13 +17,13 @@ Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker,
       });
   m_checkmate_tracker.onCheckMate(
       [this](const IPiece::PieceColor checkmated_color) {
-        handleGameOver(true, checkmated_color == IPiece::PieceColor::WHITE
-                                 ? IPiece::PieceColor::BLACK
-                                 : IPiece::PieceColor::WHITE);
+        handleGameOver(true, false,
+                       checkmated_color == IPiece::PieceColor::WHITE ? "Black"
+                                                                     : "White");
       });
 
   m_stalemate_tracker.onStalemate(
-      [this](const IPiece::PieceColor) { std::cout << "STALEMATE!!!\n"; });
+      [this]() { handleGameOver(false, true, ""); });
   generateBoard();
 }
 
@@ -65,11 +65,13 @@ void Board::displayBoard() {
 void Board::displayGameOver() {
   displayBoard();
 
-  std::cout << (m_end_game_info.winning_color == IPiece::PieceColor::WHITE
-                    ? "White"
-                    : "Black")
-            << " win" << (m_end_game_info.is_checkmate ? ", Checkmate!" : "")
-            << std::endl;
+  if (m_end_game_info.is_stalemate) {
+    std::cout << "Game over, Stalemate!";
+  } else {
+    std::cout << m_end_game_info.winning_color << " win"
+              << (m_end_game_info.is_checkmate ? ", Checkmate!" : "")
+              << std::endl;
+  }
 }
 
 bool Board::movePiece(const IPiece::PieceColor piece_color,
@@ -105,7 +107,9 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   if (m_board_map.at(to_pos) != nullptr) {
     if (m_board_map.at(to_pos)->getSymbol() == 'K') {
       // King was captured, game over
-      handleGameOver(false, piece_color);
+      handleGameOver(false, false,
+                     piece_color == IPiece::PieceColor::WHITE ? "White"
+                                                              : "Black");
       return true;
     }
 
@@ -336,9 +340,10 @@ void Board::handlePawnPromotion(const std::string &pos,
   }
 }
 
-void Board::handleGameOver(const bool is_checkmate,
-                           const IPiece::PieceColor winning_color) {
+void Board::handleGameOver(const bool is_checkmate, const bool is_stalemate,
+                           const std::string &winning_color) {
   m_end_game_info.is_checkmate = is_checkmate;
+  m_end_game_info.is_stalemate = is_stalemate;
   m_end_game_info.winning_color = winning_color;
   m_game_over_callback();
 }
