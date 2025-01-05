@@ -5,6 +5,7 @@ Queen::Queen(PieceColor color)
 
 IPiece::MoveInfo Queen::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,
+    const std::string &king_pos,
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   MoveInfo move_info = MoveInfo{};
   const auto &board_positions =
@@ -98,6 +99,11 @@ IPiece::MoveInfo Queen::getMoveInfo(
     }
   }
 
+  if (PieceUtilities::doesMovePutKingInCheck(m_color, king_pos, from_pos,
+                                             to_pos, board_map)) {
+    return move_info;
+  }
+
   m_last_move.first = from_pos;
   m_last_move.second = to_pos;
   move_info.is_valid = true;
@@ -119,6 +125,10 @@ IPiece::PieceColor Queen::getColor() const { return m_color; }
 
 std::pair<std::string, std::string> Queen::getLastMove() const {
   return m_last_move;
+}
+
+std::set<IPiece::Direction> Queen::getMovableDirections() const {
+  return PieceUtilities::DIRECTIONS;
 }
 
 std::set<IPiece::AttackPattern> Queen::getAttackPatterns() const {

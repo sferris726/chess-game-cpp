@@ -3,6 +3,7 @@
 #include "PieceFactory.h"
 #include "PieceUtilities.h"
 #include "interfaces/ICheckMateTracker.h"
+#include "interfaces/IStalemateTracker.h"
 #include <algorithm>
 #include <cctype>
 #include <map>
@@ -12,7 +13,8 @@
 
 class Board : public IBoard {
 public:
-  Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker);
+  Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker,
+        IStalemateTracker &stalemate_tracker);
 
   void displayBoard() override;
   void displayGameOver() override;
@@ -44,6 +46,7 @@ private:
 
   PieceFactory &m_piece_factory;
   ICheckMateTracker &m_checkmate_tracker;
+  IStalemateTracker &m_stalemate_tracker;
   std::function<void()> m_game_over_callback;
   std::map<std::string, std::unique_ptr<IPiece>> m_board_map;
   std::string m_white_king_pos;

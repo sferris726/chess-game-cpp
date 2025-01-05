@@ -33,7 +33,8 @@ std::string getColLetter(int col) {
   case 7:
     return "h";
   default:
-    throw std::runtime_error("Invalid Col passed");
+    // throw std::runtime_error("Invalid Col passed");
+    return "-";
   }
 }
 
@@ -91,6 +92,58 @@ IPiece::PieceType convertStrToPieceType(const std::string &str) {
   }
 
   return IPiece::PieceType::NONE;
+}
+
+bool doesMovePutKingInCheck(
+    const IPiece::PieceColor color, const std::string &king_pos,
+    const std::string &moving_from, const std::string &moving_to,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  int king_col = getColNum(king_pos[0]);
+  int king_row = std::atoi(&king_pos[1]);
+
+  // Don't care about L pattern threats as they can jump pieces anyway
+  for (const auto direction : DIRECTIONS) {
+    int c = king_col;
+    int r = king_row;
+
+    while (true) {
+      moveDirection(direction, c, r);
+      std::string new_pos = getColLetter(c) + std::to_string(r);
+      if (new_pos == moving_from) {
+        continue; // Skip over this piece since we're checking if removing from
+                  // this spot causes check
+      }
+
+      if (board_map.find(new_pos) == board_map.end()) {
+        break;
+      }
+
+      if (board_map.at(new_pos) != nullptr) {
+        if (board_map.at(new_pos)->getColor() == color) {
+          break; // Ally piece blocking threats
+        } else {
+          auto attack_patterns = board_map.at(new_pos)->getAttackPatterns();
+          for (const auto attack : attack_patterns) {
+            if (canAttackPatternThreaten(
+                    direction, attack,
+                    isOneAwayFromKing(getOppositeDirection(direction), c, r,
+                                      new_pos))) {
+              std::cout
+                  << "Warning: move would put your King in Check (Illegal)\n";
+              return true; // King will be in check
+            }
+          }
+          break; // Other threat pieces will be blocked by this one beyond this
+                 // point
+        }
+      } else {
+        if (new_pos == moving_to) {
+          break; // The to position does not leave the King in check
+        }
+      }
+    }
+  }
+  return false;
 }
 
 bool canAttackPatternThreaten(IPiece::Direction direction,
@@ -166,6 +219,33 @@ bool canPieceBeAttacked(const std::string &piece_pos,
   }
 
   return false;
+}
+
+bool isOneAwayFromKing(IPiece::Direction direction_to_king, int king_col,
+                       int king_row, const std::string &piece_pos) {
+  int piece_col = PieceUtilities::getColNum(piece_pos[0]);
+  int piece_row = std::atoi(&piece_pos[1]);
+
+  switch (direction_to_king) {
+  case IPiece::Direction::NORTH:
+    return (king_row - piece_row == 1 && king_col == piece_col);
+  case IPiece::Direction::NORTH_EAST:
+    return (king_row - piece_row == 1 && king_col - piece_col == 1);
+  case IPiece::Direction::EAST:
+    return (king_col - piece_col == 1 && king_row == piece_row);
+  case IPiece::Direction::SOUTH_EAST:
+    return (king_col - piece_col == 1 && piece_row - king_row == 1);
+  case IPiece::Direction::SOUTH:
+    return (piece_row - king_row == 1 && king_col == piece_col);
+  case IPiece::Direction::SOUTH_WEST:
+    return (piece_row - king_row == 1 && piece_col - king_col == 1);
+  case IPiece::Direction::WEST:
+    return (piece_col - king_col == 1 && king_row == piece_row);
+  case IPiece::Direction::NORTH_WEST:
+    return (king_row - piece_row == 1 && piece_col - king_col == 1);
+  default:
+    return false;
+  }
 }
 
 IPiece::Direction getOppositeDirection(IPiece::Direction direction) {

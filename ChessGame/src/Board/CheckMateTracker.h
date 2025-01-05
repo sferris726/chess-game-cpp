@@ -81,9 +81,6 @@ private:
 
   bool inBoundsCheck(Direction direction, const std::string &pos);
 
-  bool isOneRankFromKing(Direction direction, int king_col, int king_row,
-                         const std::string &piece_pos);
-
   std::vector<std::string> getOpposingPiecesInDirection(
       const Direction direction, const IPiece::PieceColor color, int start_col,
       int start_row,

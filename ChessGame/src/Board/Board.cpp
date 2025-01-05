@@ -5,11 +5,12 @@
 static const int PAWNS = 8;
 static const std::regex PIECE_PATTERN("^[rnbqRNBQ]$");
 
-Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker)
+Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker,
+             IStalemateTracker &stalemate_tracker)
     : m_piece_factory{piece_factory}, m_checkmate_tracker{checkmate_tracker},
-      m_white_king_pos{"e1"}, m_black_king_pos{"e8"},
-      m_white_king_in_check{false}, m_black_king_in_check{false},
-      m_end_game_info(EndGameInfo{}) {
+      m_stalemate_tracker{stalemate_tracker}, m_white_king_pos{"e1"},
+      m_black_king_pos{"e8"}, m_white_king_in_check{false},
+      m_black_king_in_check{false}, m_end_game_info(EndGameInfo{}) {
   m_checkmate_tracker.onKingInCheckChange(
       [this](const IPiece::PieceColor color, const bool in_check) {
         handleKingInCheckUpdate(color, in_check);
@@ -20,6 +21,9 @@ Board::Board(PieceFactory &piece_factory, ICheckMateTracker &checkmate_tracker)
                                  ? IPiece::PieceColor::BLACK
                                  : IPiece::PieceColor::WHITE);
       });
+
+  m_stalemate_tracker.onStalemate(
+      [this](const IPiece::PieceColor) { std::cout << "STALEMATE!!!\n"; });
   generateBoard();
 }
 
@@ -80,8 +84,13 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
     return false;
   }
 
-  const auto move_info =
-      m_board_map.at(from_pos)->getMoveInfo(from_pos, to_pos, m_board_map);
+  const std::string king_pos = piece_color == IPiece::PieceColor::WHITE
+                                   ? m_white_king_pos
+                                   : m_black_king_pos;
+
+  const auto move_info = m_board_map.at(from_pos)->getMoveInfo(
+      from_pos, to_pos, king_pos, m_board_map);
+
   // check if move is valid
   if (!move_info.is_valid) {
     return false;
@@ -125,6 +134,15 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   m_checkmate_tracker.scanBoard(IPiece::PieceColor::BLACK, m_black_king_pos,
                                 piece_color != IPiece::PieceColor::BLACK,
                                 m_board_map);
+
+  // Stalemate tracking
+  if (!m_white_king_in_check && !m_black_king_in_check) {
+    m_stalemate_tracker.scanBoard(IPiece::PieceColor::WHITE, m_white_king_pos,
+                                  m_board_map);
+    m_stalemate_tracker.scanBoard(IPiece::PieceColor::BLACK, m_black_king_pos,
+                                  m_board_map);
+  }
+
   return true;
 }
 

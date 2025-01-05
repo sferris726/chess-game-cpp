@@ -1,0 +1,278 @@
+#include "StalemateTracker.h"
+
+StalemateTracker::StalemateTracker() {}
+
+void StalemateTracker::onStalemate(
+    std::function<void(const IPiece::PieceColor)> callback) {
+  m_stalemate_callback = callback;
+}
+
+void StalemateTracker::scanBoard(
+    const IPiece::PieceColor king_color, const std::string &king_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  const bool king_has_legal_move =
+      doesKingHaveLegalMove(king_color, king_pos, board_map);
+
+  if (!king_has_legal_move) {
+    std::set<std::string> excluded_positions;
+    int king_col = PieceUtilities::getColNum(king_pos[0]);
+    int king_row = std::atoi(&king_pos[1]);
+
+    for (const auto direction : PieceUtilities::DIRECTIONS) {
+      int c = king_col;
+      int r = king_row;
+      bool found_ally_piece_in_direction = false;
+
+      while (true) {
+        PieceUtilities::moveDirection(direction, c, r);
+        std::string new_pos =
+            PieceUtilities::getColLetter(c) + std::to_string(r);
+        if (board_map.find(new_pos) == board_map.end()) {
+          break;
+        }
+
+        if (board_map.at(new_pos) != nullptr) {
+          if (board_map.at(new_pos)->getColor() == king_color) {
+            if (found_ally_piece_in_direction) {
+              return; // More than one Ally piece in this direction to block the
+                      // king
+            }
+
+            // Check possible positions piece can move to and if it will leave
+            // King in check
+            auto movable_positions =
+                getMovablePositionsFromPosition(king_color, new_pos, board_map);
+            for (const std::string &pos : movable_positions) {
+              if (!PieceUtilities::doesMovePutKingInCheck(
+                      king_color, king_pos, new_pos, pos, board_map)) {
+                return;
+              }
+            }
+
+            excluded_positions.insert(new_pos); // This piece has no legal move
+            found_ally_piece_in_direction = true;
+          }
+        }
+      }
+    }
+
+    for (const auto &[pos, piece] : board_map) {
+      if (piece && piece->getColor() == king_color) {
+        if (excluded_positions.count(pos) == 0) {
+          return; // Found a piece with a legal move
+        }
+      }
+    }
+
+    m_stalemate_callback(king_color);
+  }
+}
+
+bool StalemateTracker::doesKingHaveLegalMove(
+    const IPiece::PieceColor king_color, const std::string &king_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  int king_col = PieceUtilities::getColNum(king_pos[0]);
+  int king_row = std::atoi(&king_pos[1]);
+
+  // Scan all directions to check if King can make a legal move (not into check)
+  for (const auto direction : PieceUtilities::DIRECTIONS) {
+    int c = king_col;
+    int r = king_row;
+    PieceUtilities::moveDirection(direction, c, r);
+    const bool has_l_pattern_threat =
+        checkLPatternThreat(king_color, king_col, king_row, board_map);
+
+    std::string new_pos = PieceUtilities::getColLetter(c) + std::to_string(r);
+    bool found_threat = false;
+    if (!has_l_pattern_threat && board_map.find(new_pos) != board_map.end() &&
+        board_map.at(new_pos) == nullptr) {
+      bool is_one_pace = true;
+      while (true) {
+        PieceUtilities::moveDirection(direction, c, r);
+        std::string moving_pos =
+            PieceUtilities::getColLetter(c) + std::to_string(r);
+        if (board_map.find(moving_pos) == board_map.end()) {
+          break;
+        }
+
+        if (board_map.at(moving_pos) != nullptr) {
+          if (board_map.at(moving_pos)->getColor() == king_color) {
+            break;
+          } else {
+            auto attack_patterns =
+                board_map.at(moving_pos)->getAttackPatterns();
+            for (const auto attack : attack_patterns) {
+              if (!PieceUtilities::canAttackPatternThreaten(direction, attack,
+                                                            is_one_pace)) {
+                found_threat = true;
+                break;
+              }
+            }
+          }
+        }
+        is_one_pace = false;
+      }
+    }
+
+    if (!has_l_pattern_threat && !found_threat) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool StalemateTracker::checkLPatternThreat(
+    const IPiece::PieceColor king_color, const int king_col, const int king_row,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  for (const auto &[pos, piece] : board_map) {
+    if (piece != nullptr && piece->getColor() != king_color &&
+        piece->getSymbol() == 'N') {
+      int knight_col = PieceUtilities::getColNum(pos[0]);
+      int knight_row = std::atoi(&pos[1]);
+      int col_diff = std::abs(knight_col - king_col);
+      int row_diff = std::abs(knight_row - king_row);
+      if ((col_diff == 2 && row_diff == 1) ||
+          (row_diff == 2 && col_diff == 1)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+std::vector<std::string> StalemateTracker::getMovablePositionsFromPosition(
+    const IPiece::PieceColor piece_color, const std::string &curr_pos,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
+  std::vector<std::string> positions;
+  int col = PieceUtilities::getColNum(curr_pos[0]);
+  int row = std::atoi(&curr_pos[1]);
+  const char symbol = board_map.at(curr_pos)->getSymbol();
+
+  if (symbol == 'N') { // Knight checking
+    auto possible_moves = getPossiblePositionsForKnight(col, row);
+    for (const auto &move : possible_moves) {
+      if (board_map.at(move) == nullptr ||
+          board_map.at(move)->getColor() != piece_color) {
+        positions.push_back(move);
+      }
+    }
+  } else {
+    auto movable_directions = board_map.at(curr_pos)->getMovableDirections();
+    for (const auto direction : movable_directions) {
+      int c = col;
+      int r = row;
+      PieceUtilities::moveDirection(direction, c, r);
+      std::string target = PieceUtilities::getColLetter(c) + std::to_string(r);
+      if (board_map.find(target) == board_map.end()) {
+        continue;
+      }
+
+      if (board_map.at(target) != nullptr) {
+        if (board_map.at(target)->getColor() != piece_color) {
+          // Pawn handling
+          if (symbol == 'P') {
+            int col_diff = c - col;
+            int row_diff = r - row;
+            if (piece_color == IPiece::PieceColor::WHITE) {
+              if ((col_diff == 1 && row_diff == 1) ||
+                  (col_diff == -1 && row_diff == 1)) {
+                // moving northeast or northwest
+                positions.push_back(target);
+              }
+            } else {
+              if ((col_diff == 1 && row_diff == -1) ||
+                  (col_diff == -1 && row_diff == -1)) {
+                // moving southeast or southwest
+                positions.push_back(target);
+              }
+            }
+          } else {
+            positions.push_back(target);
+          }
+        } // Else can't move, blocked by an ally piece
+      } else {
+        positions.push_back(target);
+      }
+    }
+  }
+
+  return positions;
+}
+
+std::vector<std::string>
+StalemateTracker::getPossiblePositionsForKnight(const int curr_col,
+                                                const int curr_row) {
+  std::vector<std::string> ret;
+  int target_col;
+  int target_row;
+
+  // Start with moving left
+  // Going left 2 up 1
+  target_col = curr_col - 2;
+  target_row = curr_row + 1;
+  if (target_col >= 0 && target_row <= 8) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  // Going left 1, up 2
+  target_col = curr_col - 1;
+  target_row = curr_row + 2;
+  if (target_col >= 0 && target_row <= 8) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  // Going left 2, down 1
+  target_col = curr_col - 2;
+  target_row = curr_row - 1;
+  if (target_col >= 0 && target_row > 0) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  // Going left 1, down 2
+  target_col = curr_col - 1;
+  target_row = curr_row - 2;
+  if (target_col >= 0 && target_row > 0) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  // Now try the right side
+  // Going right 2 up 1
+  target_col = curr_col + 2;
+  target_row = curr_row + 1;
+  if (target_col < 8 && target_row <= 8) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  // Going right 1, up 2
+  target_col = curr_col + 1;
+  target_row = curr_row + 2;
+  if (target_col < 8 && target_row <= 8) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  // Going right 2, down 1
+  target_col = curr_col + 2;
+  target_row = curr_row - 1;
+  if (target_col < 8 && target_row > 0) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  // Going right 1, down 2
+  target_col = curr_col + 1;
+  target_row = curr_row - 2;
+  if (target_col < 8 && target_row > 0) {
+    ret.push_back(PieceUtilities::getColLetter(target_col) +
+                  std::to_string(target_row));
+  }
+
+  return ret;
+}

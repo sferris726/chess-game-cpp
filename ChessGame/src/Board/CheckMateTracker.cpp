@@ -253,7 +253,7 @@ CheckMateTracker::ThreatInfo CheckMateTracker::getThreatInfo(
         for (const auto attack : attacks) {
           const bool is_one_rank =
               !made_first_move_from_king_pos
-                  ? isOneRankFromKing(
+                  ? PieceUtilities::isOneAwayFromKing(
                         PieceUtilities::getOppositeDirection(direction),
                         king_col, king_row, curr_pos)
                   : false;
@@ -393,34 +393,6 @@ bool CheckMateTracker::inBoundsCheck(Direction direction,
   }
 
   return true;
-}
-
-bool CheckMateTracker::isOneRankFromKing(Direction direction_to_king,
-                                         int king_col, int king_row,
-                                         const std::string &piece_pos) {
-  int piece_col = PieceUtilities::getColNum(piece_pos[0]);
-  int piece_row = std::atoi(&piece_pos[1]);
-
-  switch (direction_to_king) {
-  case Direction::NORTH:
-    return (king_row - piece_row == 1 && king_col == piece_col);
-  case Direction::NORTH_EAST:
-    return (king_row - piece_row == 1 && king_col - piece_col == 1);
-  case Direction::EAST:
-    return (king_col - piece_col == 1 && king_row == piece_row);
-  case Direction::SOUTH_EAST:
-    return (king_col - piece_col == 1 && piece_row - king_row == 1);
-  case Direction::SOUTH:
-    return (piece_row - king_row == 1 && king_col == piece_col);
-  case Direction::SOUTH_WEST:
-    return (piece_row - king_row == 1 && piece_col - king_col == 1);
-  case Direction::WEST:
-    return (piece_col - king_col == 1 && king_row == piece_row);
-  case Direction::NORTH_WEST:
-    return (king_row - piece_row == 1 && piece_col - king_col == 1);
-  default:
-    return false;
-  }
 }
 
 std::vector<std::string> CheckMateTracker::getOpposingPiecesInDirection(

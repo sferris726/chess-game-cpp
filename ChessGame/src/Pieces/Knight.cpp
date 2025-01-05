@@ -5,6 +5,7 @@ Knight::Knight(PieceColor color)
 
 IPiece::MoveInfo Knight::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,
+    const std::string &king_pos,
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   MoveInfo move_info = MoveInfo{};
   const auto &board_positions =
@@ -54,6 +55,11 @@ IPiece::MoveInfo Knight::getMoveInfo(
     return move_info; // Not in an L shape pattern
   }
 
+  if (PieceUtilities::doesMovePutKingInCheck(m_color, king_pos, from_pos,
+                                             to_pos, board_map)) {
+    return move_info;
+  }
+
   m_last_move.first = from_pos;
   m_last_move.second = to_pos;
   move_info.is_valid = true;
@@ -75,6 +81,11 @@ IPiece::PieceColor Knight::getColor() const { return m_color; }
 
 std::pair<std::string, std::string> Knight::getLastMove() const {
   return m_last_move;
+}
+
+std::set<IPiece::Direction> Knight::getMovableDirections() const {
+  // Not implemented for Knight
+  return std::set<Direction>{};
 }
 
 std::set<IPiece::AttackPattern> Knight::getAttackPatterns() const {

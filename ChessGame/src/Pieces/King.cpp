@@ -5,6 +5,7 @@ King::King(PieceColor color)
 
 IPiece::MoveInfo King::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,
+    const std::string &king_pos,
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   MoveInfo move_info = MoveInfo{};
   const auto &board_positions =
@@ -84,6 +85,10 @@ std::pair<std::string, std::string> King::getLastMove() const {
   return m_last_move;
 }
 
+std::set<IPiece::Direction> King::getMovableDirections() const {
+  return PieceUtilities::DIRECTIONS;
+}
+
 std::set<IPiece::AttackPattern> King::getAttackPatterns() const {
   std::set<AttackPattern> ret;
   ret.insert(AttackPattern::HORIZONTAL_ONE);
@@ -107,6 +112,7 @@ bool King::doesMovePutKingInCheck(
       int row_diff = std::abs(row - knight_row);
       if ((col_diff == 2 && row_diff == 1) ||
           (row_diff == 2 && col_diff == 1)) {
+        std::cout << "Warning: move would put your King in Check (Illegal)\n";
         return true; // Knight has king in check
       }
     }
@@ -134,6 +140,8 @@ bool King::doesMovePutKingInCheck(
           for (const auto attack : attack_patterns) {
             if (PieceUtilities::canAttackPatternThreaten(direction, attack,
                                                          is_one_pace)) {
+              std::cout
+                  << "Warning: move would put your King in Check (Illegal)\n";
               return true; // Will be in check
             }
           }

@@ -27,6 +27,11 @@ int getColNum(const char col);
 
 IPiece::PieceType convertStrToPieceType(const std::string &str);
 
+bool doesMovePutKingInCheck(
+    const IPiece::PieceColor color, const std::string &king_pos,
+    const std::string &moving_from, const std::string &moving_to,
+    const std::map<std::string, std::unique_ptr<IPiece>> &board_map);
+
 bool canAttackPatternThreaten(IPiece::Direction direction,
                               IPiece::AttackPattern attack,
                               bool is_one_rank_from);
@@ -34,6 +39,9 @@ bool canAttackPatternThreaten(IPiece::Direction direction,
 bool canPieceBeAttacked(const std::string &piece_pos,
                         const std::string &attack_pos,
                         const IPiece &attack_piece);
+
+bool isOneAwayFromKing(IPiece::Direction direction_to_king, int king_col,
+                       int king_row, const std::string &piece_pos);
 
 IPiece::Direction getOppositeDirection(IPiece::Direction direction);
 

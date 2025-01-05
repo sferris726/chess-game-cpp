@@ -9,6 +9,7 @@ public:
 
   MoveInfo getMoveInfo(
       const std::string &from_pos, const std::string &to_pos,
+      const std::string &king_pos,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
   void setOrigin(const int col, const int row) override;
@@ -20,6 +21,8 @@ public:
   PieceColor getColor() const override;
 
   std::pair<std::string, std::string> getLastMove() const override;
+
+  std::set<Direction> getMovableDirections() const override;
 
   std::set<AttackPattern> getAttackPatterns() const override;
 
