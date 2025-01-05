@@ -89,9 +89,12 @@ bool Board::movePiece(const IPiece::PieceColor piece_color,
   const std::string king_pos = piece_color == IPiece::PieceColor::WHITE
                                    ? m_white_king_pos
                                    : m_black_king_pos;
+  const bool king_in_check = piece_color == IPiece::PieceColor::WHITE
+                                 ? m_white_king_in_check
+                                 : m_black_king_in_check;
 
   const auto move_info = m_board_map.at(from_pos)->getMoveInfo(
-      from_pos, to_pos, king_pos, m_board_map);
+      from_pos, to_pos, king_pos, king_in_check, m_board_map);
 
   // check if move is valid
   if (!move_info.is_valid) {

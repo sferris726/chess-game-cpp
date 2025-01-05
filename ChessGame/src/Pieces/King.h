@@ -9,7 +9,7 @@ public:
 
   MoveInfo getMoveInfo(
       const std::string &from_pos, const std::string &to_pos,
-      const std::string &king_pos,
+      const std::string &king_pos, const bool king_in_check,
       const std::map<std::string, std::unique_ptr<IPiece>> &board_map) override;
 
   void setOrigin(const int col, const int row) override;

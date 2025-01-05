@@ -5,7 +5,7 @@ Knight::Knight(PieceColor color)
 
 IPiece::MoveInfo Knight::getMoveInfo(
     const std::string &from_pos, const std::string &to_pos,
-    const std::string &king_pos,
+    const std::string &king_pos, const bool king_in_check,
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   MoveInfo move_info = MoveInfo{};
   const auto &board_positions =
@@ -55,9 +55,11 @@ IPiece::MoveInfo Knight::getMoveInfo(
     return move_info; // Not in an L shape pattern
   }
 
-  if (PieceUtilities::doesMovePutKingInCheck(m_color, king_pos, from_pos,
-                                             to_pos, board_map)) {
-    return move_info;
+  if (!king_in_check) {
+    if (PieceUtilities::doesMovePutKingInCheck(m_color, king_pos, from_pos,
+                                               to_pos, board_map)) {
+      return move_info;
+    }
   }
 
   m_last_move.first = from_pos;
