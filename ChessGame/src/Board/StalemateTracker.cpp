@@ -21,7 +21,6 @@ void StalemateTracker::scanBoard(
     for (const auto direction : PieceUtilities::DIRECTIONS) {
       int c = king_col;
       int r = king_row;
-      bool found_ally_piece_in_direction = false;
 
       while (true) {
         PieceUtilities::moveDirection(direction, c, r);
@@ -33,11 +32,6 @@ void StalemateTracker::scanBoard(
 
         if (board_map.at(new_pos) != nullptr) {
           if (board_map.at(new_pos)->getColor() == king_color) {
-            if (found_ally_piece_in_direction) {
-              return; // More than one Ally piece in this direction to block the
-                      // king
-            }
-
             // Check possible positions piece can move to and if it will leave
             // King in check
             auto movable_positions =
@@ -49,8 +43,10 @@ void StalemateTracker::scanBoard(
               }
             }
 
-            excluded_positions.insert(new_pos); // This piece has no legal move
-            found_ally_piece_in_direction = true;
+            if (movable_positions.size() == 0) {
+              excluded_positions.insert(
+                  new_pos); // This piece has no legal move
+            }
           }
         }
       }
@@ -58,8 +54,11 @@ void StalemateTracker::scanBoard(
 
     for (const auto &[pos, piece] : board_map) {
       if (piece && piece->getColor() == king_color) {
-        if (excluded_positions.count(pos) == 0) {
-          return; // Found a piece with a legal move
+        if (excluded_positions.count(pos) > 0) {
+          if (getMovablePositionsFromPosition(king_color, pos, board_map)
+                  .size() > 0) {
+            return; // Piece still has a legal move
+          }
         }
       }
     }
@@ -73,48 +72,72 @@ bool StalemateTracker::doesKingHaveLegalMove(
     const std::map<std::string, std::unique_ptr<IPiece>> &board_map) {
   int king_col = PieceUtilities::getColNum(king_pos[0]);
   int king_row = std::atoi(&king_pos[1]);
-
-  // Scan all directions to check if King can make a legal move (not into check)
+  // Gather the possible moves for the King
+  std::vector<std::string> possible_king_moves;
   for (const auto direction : PieceUtilities::DIRECTIONS) {
     int c = king_col;
     int r = king_row;
     PieceUtilities::moveDirection(direction, c, r);
+    if ((c >= 0 && c < 8) && (r > 0 && r <= 8)) {
+      std::string pos = PieceUtilities::getColLetter(c) + std::to_string(r);
+      if (board_map.at(pos) == nullptr ||
+          board_map.at(pos)->getColor() != king_color) {
+        possible_king_moves.push_back(pos);
+      }
+    }
+  }
+
+  for (const std::string &pos : possible_king_moves) {
+    int pos_col = PieceUtilities::getColNum(pos[0]);
+    int pos_row = std::atoi(&pos[1]);
+    bool all_directions_safe = true;
+    bool can_king_move = false;
+
     const bool has_l_pattern_threat =
-        checkLPatternThreat(king_color, king_col, king_row, board_map);
+        checkLPatternThreat(king_color, pos_col, pos_row, board_map);
 
-    std::string new_pos = PieceUtilities::getColLetter(c) + std::to_string(r);
-    bool found_threat = false;
-    if (!has_l_pattern_threat && board_map.find(new_pos) != board_map.end() &&
-        board_map.at(new_pos) == nullptr) {
-      bool is_one_pace = true;
-      while (true) {
-        PieceUtilities::moveDirection(direction, c, r);
-        std::string moving_pos =
-            PieceUtilities::getColLetter(c) + std::to_string(r);
-        if (board_map.find(moving_pos) == board_map.end()) {
-          break;
-        }
+    if (!has_l_pattern_threat) {
+      // Scan all directions to check if King can make a legal move (not into
+      // check)
+      for (const auto direction : PieceUtilities::DIRECTIONS) {
+        int c = pos_col;
+        int r = pos_row;
+        bool is_one_pace = true;
 
-        if (board_map.at(moving_pos) != nullptr) {
-          if (board_map.at(moving_pos)->getColor() == king_color) {
+        while (true) {
+          PieceUtilities::moveDirection(direction, c, r);
+          std::string moving_pos =
+              PieceUtilities::getColLetter(c) + std::to_string(r);
+          if (board_map.find(moving_pos) == board_map.end()) {
             break;
-          } else {
-            auto attack_patterns =
-                board_map.at(moving_pos)->getAttackPatterns();
-            for (const auto attack : attack_patterns) {
-              if (!PieceUtilities::canAttackPatternThreaten(direction, attack,
-                                                            is_one_pace)) {
-                found_threat = true;
-                break;
+          }
+
+          if (board_map.at(moving_pos) != nullptr) {
+            if (board_map.at(moving_pos)->getColor() == king_color) {
+              if (!is_one_pace) {
+                can_king_move = true;
+              }
+              break;
+            } else {
+              auto attack_patterns =
+                  board_map.at(moving_pos)->getAttackPatterns();
+              for (const auto attack : attack_patterns) {
+                if (PieceUtilities::canAttackPatternThreaten(
+                        PieceUtilities::getOppositeDirection(direction), attack,
+                        is_one_pace)) {
+                  all_directions_safe = false;
+                  break;
+                }
               }
             }
+
+            is_one_pace = false;
           }
         }
-        is_one_pace = false;
       }
     }
 
-    if (!has_l_pattern_threat && !found_threat) {
+    if (can_king_move && !has_l_pattern_threat && all_directions_safe) {
       return true;
     }
   }
@@ -193,7 +216,16 @@ std::vector<std::string> StalemateTracker::getMovablePositionsFromPosition(
           }
         } // Else can't move, blocked by an ally piece
       } else {
-        positions.push_back(target);
+        if (symbol == 'P') {
+          if ((piece_color == IPiece::PieceColor::WHITE &&
+               direction == Direction::NORTH) ||
+              (piece_color == IPiece::PieceColor::BLACK &&
+               direction == Direction::SOUTH)) {
+            positions.push_back(target);
+          }
+        } else {
+          positions.push_back(target);
+        }
       }
     }
   }

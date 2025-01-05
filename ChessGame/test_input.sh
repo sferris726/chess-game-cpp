@@ -65,7 +65,7 @@ for {set i 0} {$i < [llength $moves]} {incr i} {
         send "[lindex $moves $i]\r"
     }
 
-    sleep 1
+    sleep 0.2
 }
 
 expect eof
